@@ -1,4 +1,4 @@
-package com.lalosapps.freetoplay
+package com.lalosapps.freetoplay.ui.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

@@ -3,6 +3,8 @@ package com.lalosapps.freetoplay.core.di
 import android.content.Context
 import com.lalosapps.freetoplay.FreeToPlayApp
 import com.lalosapps.freetoplay.data.remote.api.GamesApi
+import com.lalosapps.freetoplay.data.repository.DefaultGamesRepository
+import com.lalosapps.freetoplay.domain.repository.GamesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,5 +35,11 @@ object AppModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGamesRepository(gamesApi: GamesApi): GamesRepository {
+        return DefaultGamesRepository(gamesApi)
     }
 }

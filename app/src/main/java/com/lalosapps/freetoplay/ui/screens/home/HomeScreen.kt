@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -34,6 +33,8 @@ import com.lalosapps.freetoplay.R
 @Composable
 fun HomeScreen(
     uiState: Resource<List<Game>>,
+    games: List<Game>,
+    barTitle: String,
     onOpenDrawer: () -> Unit,
     onSearch: () -> Unit,
     onGameClick: (Int) -> Unit
@@ -59,7 +60,6 @@ fun HomeScreen(
             }
         }
         is Resource.Success -> {
-            val games = uiState.data
             if (games.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(text = "Sorry, no games available.")
@@ -83,7 +83,7 @@ fun HomeScreen(
                             )
                         }
                         Text(
-                            text = stringResource(id = R.string.app_name),
+                            text = barTitle,
                             style = MaterialTheme.typography.h6
                         )
                         IconButton(onClick = { onSearch() }) {

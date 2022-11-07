@@ -25,8 +25,24 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             FreeToPlayTheme {
-                val uiState = viewModel.games.collectAsStateWithLifecycle().value
-                FreeToPlayApp(uiState = uiState)
+                val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+                val gamesList = viewModel.gamesList.collectAsStateWithLifecycle().value
+                FreeToPlayApp(
+                    uiState = uiState,
+                    gamesList = gamesList,
+                    onDrawerAllGamesClick = {
+                        viewModel.setAllGames()
+                    },
+                    onDrawerPcGamesClick = {
+                        viewModel.setPcGames()
+                    },
+                    onDrawerWebGamesClick = {
+                        viewModel.setWebGames()
+                    },
+                    onDrawerLatestGamesClick = {
+                        viewModel.setLatestGames()
+                    }
+                )
             }
         }
     }

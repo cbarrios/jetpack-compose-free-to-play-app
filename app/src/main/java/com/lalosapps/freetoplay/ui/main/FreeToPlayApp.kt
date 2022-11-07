@@ -1,12 +1,17 @@
 package com.lalosapps.freetoplay.ui.main
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -35,12 +40,28 @@ import kotlinx.coroutines.launch
 @ExperimentalPagerApi
 @Composable
 fun FreeToPlayApp(
-    uiState: Resource<List<Game>>
+    uiState: Resource<List<Game>>,
+    gamesList: List<Game>,
+    onDrawerAllGamesClick: () -> Unit,
+    onDrawerPcGamesClick: () -> Unit,
+    onDrawerWebGamesClick: () -> Unit,
+    onDrawerLatestGamesClick: () -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
+
+    if (scaffoldState.drawerState.isOpen) {
+        BackHandler {
+            scope.launch {
+                scaffoldState.drawerState.close()
+            }
+        }
+    }
+
+    val defaultTitle = stringResource(id = R.string.app_name)
+    var barTitle by rememberSaveable { mutableStateOf(defaultTitle) }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         scaffoldState = scaffoldState,
@@ -64,37 +85,56 @@ fun FreeToPlayApp(
                         textStyle = MaterialTheme.typography.body1,
                         textColor = MaterialTheme.colors.onBackground,
                         onClick = {
-                            // navigate later
+                            barTitle = defaultTitle
+                            onDrawerAllGamesClick()
+                            scope.launch {
+                                scaffoldState.drawerState.close()
+                            }
                         }
                     )
+                    val pcGames = stringResource(R.string.pc_games)
                     NavigationDrawerItem(
                         icon = Icons.Default.Window,
                         iconColor = MaterialTheme.colors.primary,
-                        text = stringResource(R.string.pc_games),
+                        text = pcGames,
                         textStyle = MaterialTheme.typography.body1,
                         textColor = MaterialTheme.colors.onBackground,
                         onClick = {
-                            // navigate later
+                            barTitle = pcGames
+                            onDrawerPcGamesClick()
+                            scope.launch {
+                                scaffoldState.drawerState.close()
+                            }
                         }
                     )
+                    val webGames = stringResource(R.string.web_games)
                     NavigationDrawerItem(
                         icon = Icons.Default.Web,
                         iconColor = MaterialTheme.colors.primary,
-                        text = stringResource(R.string.web_games),
+                        text = webGames,
                         textStyle = MaterialTheme.typography.body1,
                         textColor = MaterialTheme.colors.onBackground,
                         onClick = {
-                            // navigate later
+                            barTitle = webGames
+                            onDrawerWebGamesClick()
+                            scope.launch {
+                                scaffoldState.drawerState.close()
+                            }
                         }
                     )
+                    val latestGames = stringResource(R.string.latest_games)
                     NavigationDrawerItem(
                         icon = Icons.Default.TrendingUp,
                         iconColor = MaterialTheme.colors.primary,
-                        text = stringResource(R.string.latest_games),
+                        text = latestGames,
                         textStyle = MaterialTheme.typography.body1,
                         textColor = MaterialTheme.colors.onBackground,
                         onClick = {
-                            // navigate later
+                            barTitle = latestGames
+                            onDrawerLatestGamesClick()
+                            scope.launch {
+                                scaffoldState.drawerState.close()
+                            }
                         }
                     )
                 }
@@ -109,6 +149,8 @@ fun FreeToPlayApp(
             composable(Screen.HOME) {
                 HomeScreen(
                     uiState = uiState,
+                    games = gamesList,
+                    barTitle = barTitle,
                     onOpenDrawer = {
                         scope.launch {
                             scaffoldState.drawerState.open()

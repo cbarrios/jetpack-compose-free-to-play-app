@@ -22,13 +22,49 @@ class MainViewModel @Inject constructor(
     var splashScreenVisible by mutableStateOf(true)
         private set
 
-    private val _games = MutableStateFlow<Resource<List<Game>>>(Resource.Loading)
-    val games = _games.asStateFlow()
+    private val _uiState = MutableStateFlow<Resource<List<Game>>>(Resource.Loading)
+    val uiState = _uiState.asStateFlow()
+
+    private val _gamesList = MutableStateFlow<List<Game>>(emptyList())
+    val gamesList = _gamesList.asStateFlow()
+
+    private var originalList = listOf<Game>()
 
     init {
         viewModelScope.launch {
-            _games.value = repository.getAllGames()
+            val result = repository.getAllGames()
+            _uiState.value = result
+            if (result is Resource.Success) {
+                _gamesList.value = result.data
+                originalList = result.data
+            }
             splashScreenVisible = false
+        }
+    }
+
+    fun setAllGames() {
+        if (originalList.isNotEmpty()) {
+            _gamesList.value = originalList
+        }
+    }
+
+    fun setPcGames() {
+        if (originalList.isNotEmpty()) {
+            _gamesList.value =
+                originalList.filter { it.platform.contains("windows", ignoreCase = true) }
+        }
+    }
+
+    fun setWebGames() {
+        if (originalList.isNotEmpty()) {
+            _gamesList.value =
+                originalList.filter { !it.platform.contains("windows", ignoreCase = true) }
+        }
+    }
+
+    fun setLatestGames() {
+        if (originalList.isNotEmpty()) {
+            _gamesList.value = originalList.sortedByDescending { it.releaseDate }
         }
     }
 }

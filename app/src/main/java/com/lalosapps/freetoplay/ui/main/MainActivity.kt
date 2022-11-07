@@ -7,9 +7,11 @@ import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.lalosapps.freetoplay.ui.theme.FreeToPlayTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+@ExperimentalPagerApi
 @ExperimentalLifecycleComposeApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

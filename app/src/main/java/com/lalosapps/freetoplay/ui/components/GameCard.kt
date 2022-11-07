@@ -63,7 +63,8 @@ fun GameCard(
                     modifier = Modifier.padding(5.dp),
                     style = MaterialTheme.typography.body1,
                     overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colors.onSurface
+                    color = MaterialTheme.colors.onSurface,
+                    maxLines = 1
                 )
                 Box(
                     modifier = Modifier
@@ -76,7 +77,8 @@ fun GameCard(
                             .padding(horizontal = 5.dp),
                         style = MaterialTheme.typography.caption,
                         color = MaterialTheme.colors.onSurface,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 3
                     )
                 }
                 Spacer(modifier = Modifier.height(5.dp))

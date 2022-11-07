@@ -13,9 +13,12 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.lalosapps.freetoplay.ui.components.drawer.NavigationDrawer
 import com.lalosapps.freetoplay.R
@@ -23,9 +26,11 @@ import com.lalosapps.freetoplay.core.util.Resource
 import com.lalosapps.freetoplay.domain.model.Game
 import com.lalosapps.freetoplay.ui.components.drawer.NavigationDrawerItem
 import com.lalosapps.freetoplay.ui.screens.base.Screen
+import com.lalosapps.freetoplay.ui.screens.game_details.GameDetailsScreen
 import com.lalosapps.freetoplay.ui.screens.home.HomeScreen
 import kotlinx.coroutines.launch
 
+@ExperimentalLifecycleComposeApi
 @ExperimentalPagerApi
 @Composable
 fun FreeToPlayApp(
@@ -52,7 +57,7 @@ fun FreeToPlayApp(
                 content = {
                     NavigationDrawerItem(
                         icon = Icons.Default.Games,
-                        iconColor = MaterialTheme.colors.onBackground,
+                        iconColor = MaterialTheme.colors.primary,
                         text = stringResource(R.string.all_games),
                         textStyle = MaterialTheme.typography.body1,
                         textColor = MaterialTheme.colors.onBackground,
@@ -62,7 +67,7 @@ fun FreeToPlayApp(
                     )
                     NavigationDrawerItem(
                         icon = Icons.Default.Window,
-                        iconColor = MaterialTheme.colors.onBackground,
+                        iconColor = MaterialTheme.colors.primary,
                         text = stringResource(R.string.pc_games),
                         textStyle = MaterialTheme.typography.body1,
                         textColor = MaterialTheme.colors.onBackground,
@@ -72,7 +77,7 @@ fun FreeToPlayApp(
                     )
                     NavigationDrawerItem(
                         icon = Icons.Default.Web,
-                        iconColor = MaterialTheme.colors.onBackground,
+                        iconColor = MaterialTheme.colors.primary,
                         text = stringResource(R.string.web_games),
                         textStyle = MaterialTheme.typography.body1,
                         textColor = MaterialTheme.colors.onBackground,
@@ -82,7 +87,7 @@ fun FreeToPlayApp(
                     )
                     NavigationDrawerItem(
                         icon = Icons.Default.TrendingUp,
-                        iconColor = MaterialTheme.colors.onBackground,
+                        iconColor = MaterialTheme.colors.primary,
                         text = stringResource(R.string.latest_games),
                         textStyle = MaterialTheme.typography.body1,
                         textColor = MaterialTheme.colors.onBackground,
@@ -110,10 +115,20 @@ fun FreeToPlayApp(
                     onSearch = {
 
                     },
-                    onGameClick = {
-
+                    onGameClick = { gameId ->
+                        navController.navigate(Screen.GameDetails.createRoute(gameId))
                     }
                 )
+            }
+            composable(
+                route = Screen.GameDetails.ROUTE,
+                arguments = listOf(
+                    navArgument(Screen.GameDetails.A1_INT_GAME_ID) {
+                        type = NavType.IntType
+                    }
+                )
+            ) {
+                GameDetailsScreen()
             }
         }
     }

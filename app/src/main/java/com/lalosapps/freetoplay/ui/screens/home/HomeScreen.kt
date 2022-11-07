@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.lalosapps.freetoplay.core.util.Resource
@@ -24,6 +25,7 @@ import com.lalosapps.freetoplay.core.util.header
 import com.lalosapps.freetoplay.domain.model.Game
 import com.lalosapps.freetoplay.ui.components.CarouselView
 import com.lalosapps.freetoplay.ui.components.GameCard
+import com.lalosapps.freetoplay.R
 
 @ExperimentalPagerApi
 @Composable
@@ -31,12 +33,12 @@ fun HomeScreen(
     uiState: Resource<List<Game>>,
     onOpenDrawer: () -> Unit,
     onSearch: () -> Unit,
-    onGameClick: () -> Unit
+    onGameClick: (Int) -> Unit
 ) {
     when (uiState) {
         is Resource.Error -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Error")
+                Text(text = "Error: ${uiState.error ?: uiState.data}")
             }
         }
         is Resource.Success -> {
@@ -52,11 +54,10 @@ fun HomeScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-
                         IconButton(onClick = { onOpenDrawer() }) {
                             Icon(
                                 imageVector = Icons.Default.Menu,
@@ -64,6 +65,10 @@ fun HomeScreen(
                                 tint = MaterialTheme.colors.onBackground
                             )
                         }
+                        Text(
+                            text = stringResource(id = R.string.app_name),
+                            style = MaterialTheme.typography.h6
+                        )
                         IconButton(onClick = { onSearch() }) {
                             Icon(
                                 imageVector = Icons.Default.Search,
@@ -89,7 +94,7 @@ fun HomeScreen(
                         items(games) { game ->
                             GameCard(
                                 game = game,
-                                onClick = { onGameClick() }
+                                onClick = { onGameClick(game.id) }
                             )
                         }
                     }

@@ -32,7 +32,7 @@ fun NavigationDrawerItem(
 
     ) {
         Icon(
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(32.dp),
             imageVector = icon,
             contentDescription = icon.name,
             tint = iconColor,

@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
@@ -39,6 +40,7 @@ fun FreeToPlayApp(
     val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
+    val uriHandler = LocalUriHandler.current
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         scaffoldState = scaffoldState,
@@ -128,7 +130,12 @@ fun FreeToPlayApp(
                     }
                 )
             ) {
-                GameDetailsScreen()
+                GameDetailsScreen(
+                    onBackPress = { navController.navigateUp() },
+                    onGameUrlClick = {
+                        uriHandler.openUri(it)
+                    }
+                )
             }
         }
     }

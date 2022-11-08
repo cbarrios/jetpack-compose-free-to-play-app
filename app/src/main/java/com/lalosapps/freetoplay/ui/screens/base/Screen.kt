@@ -12,4 +12,6 @@ object Screen {
             return "$GAME_DETAILS/$gameId"
         }
     }
+
+    const val SEARCH = "search"
 }

@@ -34,6 +34,7 @@ import com.lalosapps.freetoplay.ui.components.drawer.NavigationDrawerItem
 import com.lalosapps.freetoplay.ui.screens.base.Screen
 import com.lalosapps.freetoplay.ui.screens.game_details.GameDetailsScreen
 import com.lalosapps.freetoplay.ui.screens.home.HomeScreen
+import com.lalosapps.freetoplay.ui.screens.search.SearchScreen
 import kotlinx.coroutines.launch
 
 @ExperimentalLifecycleComposeApi
@@ -157,7 +158,7 @@ fun FreeToPlayApp(
                         }
                     },
                     onSearch = {
-
+                        navController.navigate(Screen.SEARCH)
                     },
                     onGameClick = { gameId ->
                         navController.navigate(Screen.GameDetails.createRoute(gameId))
@@ -176,6 +177,16 @@ fun FreeToPlayApp(
                     onBackPress = { navController.navigateUp() },
                     onGameUrlClick = {
                         uriHandler.openUri(it)
+                    }
+                )
+            }
+            composable(Screen.SEARCH) {
+                SearchScreen(
+                    games = gamesList,
+                    barTitle = barTitle,
+                    onBackPress = { navController.navigateUp() },
+                    onItemClick = { gameId ->
+                        navController.navigate(Screen.GameDetails.createRoute(gameId))
                     }
                 )
             }

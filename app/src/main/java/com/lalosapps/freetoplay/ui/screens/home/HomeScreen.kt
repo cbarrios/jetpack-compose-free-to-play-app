@@ -104,7 +104,6 @@ fun HomeScreen(
                                     .padding(8.dp),
                                 urls = randomUrls,
                                 shape = MaterialTheme.shapes.medium,
-                                crossFade = 1000,
                                 contentScale = ContentScale.FillBounds
                             )
                         }

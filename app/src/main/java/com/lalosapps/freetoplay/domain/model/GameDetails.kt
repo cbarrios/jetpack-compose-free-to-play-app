@@ -17,4 +17,18 @@ data class GameDetails(
     val thumbnail: String,
     val title: String,
     val isFavorite: Boolean
-)
+) {
+    fun toGame() = Game(
+        developer,
+        freeToGameProfileUrl,
+        gameUrl,
+        genre,
+        id,
+        platform,
+        publisher,
+        releaseDate,
+        shortDescription,
+        thumbnail,
+        title
+    )
+}

@@ -16,4 +16,6 @@ interface GamesRepository {
     fun getGameFlow(id: Int): Flow<List<GameDetails>>
 
     suspend fun toggleFavoriteGame(id: Int, favorite: Boolean): Boolean
+
+    fun getFavoritesFlow(): Flow<List<GameDetails>>
 }

@@ -14,4 +14,6 @@ object Screen {
     }
 
     const val SEARCH = "search"
+
+    const val FAVORITES = "favorites"
 }

@@ -32,6 +32,7 @@ import com.lalosapps.freetoplay.core.util.Resource
 import com.lalosapps.freetoplay.domain.model.Game
 import com.lalosapps.freetoplay.ui.components.drawer.NavigationDrawerItem
 import com.lalosapps.freetoplay.ui.screens.base.Screen
+import com.lalosapps.freetoplay.ui.screens.favorites.FavoritesScreen
 import com.lalosapps.freetoplay.ui.screens.game_details.GameDetailsScreen
 import com.lalosapps.freetoplay.ui.screens.home.HomeScreen
 import com.lalosapps.freetoplay.ui.screens.search.SearchScreen
@@ -138,6 +139,19 @@ fun FreeToPlayApp(
                             }
                         }
                     )
+                    NavigationDrawerItem(
+                        icon = Icons.Default.Favorite,
+                        iconColor = MaterialTheme.colors.primary,
+                        text = stringResource(R.string.my_games),
+                        textStyle = MaterialTheme.typography.body1,
+                        textColor = MaterialTheme.colors.onBackground,
+                        onClick = {
+                            navController.navigate(Screen.FAVORITES)
+                            scope.launch {
+                                scaffoldState.drawerState.close()
+                            }
+                        }
+                    )
                 }
             )
         }
@@ -185,6 +199,14 @@ fun FreeToPlayApp(
                 SearchScreen(
                     games = gamesList,
                     barTitle = barTitle,
+                    onBackPress = { navController.navigateUp() },
+                    onItemClick = { gameId ->
+                        navController.navigate(Screen.GameDetails.createRoute(gameId))
+                    }
+                )
+            }
+            composable(Screen.FAVORITES) {
+                FavoritesScreen(
                     onBackPress = { navController.navigateUp() },
                     onItemClick = { gameId ->
                         navController.navigate(Screen.GameDetails.createRoute(gameId))

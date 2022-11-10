@@ -63,4 +63,8 @@ class DefaultGamesRepository @Inject constructor(
             false
         }
     }
+
+    override fun getFavoritesFlow(): Flow<List<GameDetails>> {
+        return gamesDao.getFavoritesFlow().map { it.map { entity -> entity.toGameDetails() } }
+    }
 }

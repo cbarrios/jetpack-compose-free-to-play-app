@@ -5,10 +5,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -18,13 +18,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.lalosapps.freetoplay.R
 import com.lalosapps.freetoplay.core.util.Resource
 import com.lalosapps.freetoplay.core.util.getRandomUrls
 import com.lalosapps.freetoplay.core.util.header
 import com.lalosapps.freetoplay.domain.model.Game
 import com.lalosapps.freetoplay.ui.components.CarouselView
 import com.lalosapps.freetoplay.ui.components.GameCard
-import com.lalosapps.freetoplay.R
+import kotlinx.coroutines.launch
 
 @ExperimentalPagerApi
 @Composable
@@ -59,10 +60,10 @@ fun HomeScreen(
                 }
             } else {
                 var showMessage by rememberSaveable { mutableStateOf(true) }
-                if (showMessage) {
-                    LaunchedEffect(Unit) {
-                        scaffoldState.snackbarHostState.showSnackbar("Offline Mode")
+                LaunchedEffect(Unit) {
+                    if (showMessage) {
                         showMessage = false
+                        scaffoldState.snackbarHostState.showSnackbar("Offline Mode")
                     }
                 }
                 GamesScreen(
@@ -131,24 +132,47 @@ fun GamesScreen(
                 )
             }
         }
-        val randomUrls = remember { games.getRandomUrls() }
-        LazyVerticalGrid(columns = GridCells.Fixed(2)) {
-            header {
-                CarouselView(
-                    modifier = Modifier
-                        .requiredHeight(260.dp)
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    urls = randomUrls,
-                    shape = MaterialTheme.shapes.medium,
-                    contentScale = ContentScale.FillBounds
-                )
+
+        Box {
+            val gridState = rememberLazyGridState()
+            val scope = rememberCoroutineScope()
+            val randomUrls = remember { games.getRandomUrls() }
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                state = gridState
+            ) {
+                header {
+                    CarouselView(
+                        modifier = Modifier
+                            .requiredHeight(260.dp)
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        urls = randomUrls,
+                        shape = MaterialTheme.shapes.medium,
+                        contentScale = ContentScale.FillBounds
+                    )
+                }
+                items(items = games, key = { it.id }) { game ->
+                    GameCard(
+                        game = game,
+                        onClick = { onGameClick(game.id) }
+                    )
+                }
             }
-            items(games) { game ->
-                GameCard(
-                    game = game,
-                    onClick = { onGameClick(game.id) }
-                )
+            val showUpButton by remember {
+                derivedStateOf {
+                    gridState.firstVisibleItemIndex > 0
+                }
+            }
+            androidx.compose.animation.AnimatedVisibility(
+                visible = showUpButton,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                IconButton(
+                    onClick = { scope.launch { gridState.scrollToItem(0) } }
+                ) {
+                    Icon(imageVector = Icons.Default.ArrowUpward, contentDescription = null)
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.lalosapps.freetoplay.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
+import com.lalosapps.freetoplay.data.local.room.entity.GameDetailsEntity
 import com.lalosapps.freetoplay.domain.model.GameDetails
 import com.lalosapps.freetoplay.domain.model.MinimumSystemRequirements
 import com.lalosapps.freetoplay.domain.model.Screenshot
@@ -38,6 +39,30 @@ data class GameDetailsDto(
         shortDescription,
         status,
         thumbnail,
-        title
+        title,
+        isFavorite = false
+    )
+
+    fun toGameDetailsEntity() = GameDetailsEntity(
+        description,
+        developer,
+        freeToGameProfileUrl,
+        gameUrl,
+        genre,
+        requirementOs = minSystemRequirements?.os,
+        requirementProcessor = minSystemRequirements?.processor,
+        requirementMemory = minSystemRequirements?.memory,
+        requirementStorage = minSystemRequirements?.storage,
+        requirementGraphics = minSystemRequirements?.graphics,
+        platform,
+        publisher,
+        releaseDate,
+        screenshots,
+        shortDescription,
+        status,
+        thumbnail,
+        title,
+        isFavorite = false,
+        id
     )
 }

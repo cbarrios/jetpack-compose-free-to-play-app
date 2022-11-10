@@ -1,7 +1,10 @@
 package com.lalosapps.freetoplay.core.di
 
 import android.content.Context
+import androidx.room.Room
 import com.lalosapps.freetoplay.FreeToPlayApp
+import com.lalosapps.freetoplay.data.local.room.dao.GamesDao
+import com.lalosapps.freetoplay.data.local.room.db.GamesDatabase
 import com.lalosapps.freetoplay.data.remote.api.GamesApi
 import com.lalosapps.freetoplay.data.repository.DefaultGamesRepository
 import com.lalosapps.freetoplay.domain.repository.GamesRepository
@@ -39,7 +42,15 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideGamesRepository(gamesApi: GamesApi): GamesRepository {
-        return DefaultGamesRepository(gamesApi)
+    fun provideGamesDao(freeToPlayApp: FreeToPlayApp): GamesDao {
+        return Room.databaseBuilder(freeToPlayApp, GamesDatabase::class.java, "games_db")
+            .build()
+            .gamesDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideGamesRepository(gamesApi: GamesApi, gamesDao: GamesDao): GamesRepository {
+        return DefaultGamesRepository(gamesApi, gamesDao)
     }
 }

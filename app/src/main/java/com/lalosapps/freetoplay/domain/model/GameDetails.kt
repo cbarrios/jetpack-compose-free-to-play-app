@@ -15,5 +15,6 @@ data class GameDetails(
     val shortDescription: String,
     val status: String,
     val thumbnail: String,
-    val title: String
+    val title: String,
+    val isFavorite: Boolean
 )

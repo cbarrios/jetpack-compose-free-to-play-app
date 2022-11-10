@@ -5,15 +5,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -34,6 +31,7 @@ import com.lalosapps.freetoplay.R
 fun HomeScreen(
     uiState: Resource<List<Game>>,
     games: List<Game>,
+    scaffoldState: ScaffoldState,
     barTitle: String,
     onOpenDrawer: () -> Unit,
     onSearch: () -> Unit,
@@ -41,21 +39,38 @@ fun HomeScreen(
 ) {
     when (uiState) {
         is Resource.Error -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_connection_error),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "${uiState.error ?: "Couldn't fetch games."}",
-                    textAlign = TextAlign.Center
+            if (games.isEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_connection_error),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "${uiState.error ?: "Couldn't fetch games."}",
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                var showMessage by rememberSaveable { mutableStateOf(true) }
+                if (showMessage) {
+                    LaunchedEffect(Unit) {
+                        scaffoldState.snackbarHostState.showSnackbar("Offline Mode")
+                        showMessage = false
+                    }
+                }
+                GamesScreen(
+                    games = games,
+                    barTitle = barTitle,
+                    onOpenDrawer = onOpenDrawer,
+                    onSearch = onSearch,
+                    onGameClick = onGameClick
                 )
             }
         }
@@ -65,58 +80,76 @@ fun HomeScreen(
                     Text(text = "Sorry, no games available.")
                 }
             } else {
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        IconButton(onClick = { onOpenDrawer() }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = null,
-                                tint = MaterialTheme.colors.onBackground
-                            )
-                        }
-                        Text(
-                            text = barTitle,
-                            style = MaterialTheme.typography.h6
-                        )
-                        IconButton(onClick = { onSearch() }) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = null,
-                                tint = MaterialTheme.colors.onBackground
-                            )
-                        }
-                    }
-                    val randomUrls = remember { games.getRandomUrls() }
-                    LazyVerticalGrid(columns = GridCells.Fixed(2)) {
-                        header {
-                            CarouselView(
-                                modifier = Modifier
-                                    .requiredHeight(260.dp)
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                urls = randomUrls,
-                                shape = MaterialTheme.shapes.medium,
-                                contentScale = ContentScale.FillBounds
-                            )
-                        }
-                        items(games) { game ->
-                            GameCard(
-                                game = game,
-                                onClick = { onGameClick(game.id) }
-                            )
-                        }
-                    }
-                }
+                GamesScreen(
+                    games = games,
+                    barTitle = barTitle,
+                    onOpenDrawer = onOpenDrawer,
+                    onSearch = onSearch,
+                    onGameClick = onGameClick
+                )
             }
         }
         else -> Unit
+    }
+}
+
+@ExperimentalPagerApi
+@Composable
+fun GamesScreen(
+    games: List<Game>,
+    barTitle: String,
+    onOpenDrawer: () -> Unit,
+    onSearch: () -> Unit,
+    onGameClick: (Int) -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            IconButton(onClick = onOpenDrawer) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.onBackground
+                )
+            }
+            Text(
+                text = barTitle,
+                style = MaterialTheme.typography.h6
+            )
+            IconButton(onClick = onSearch) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.onBackground
+                )
+            }
+        }
+        val randomUrls = remember { games.getRandomUrls() }
+        LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+            header {
+                CarouselView(
+                    modifier = Modifier
+                        .requiredHeight(260.dp)
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    urls = randomUrls,
+                    shape = MaterialTheme.shapes.medium,
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+            items(games) { game ->
+                GameCard(
+                    game = game,
+                    onClick = { onGameClick(game.id) }
+                )
+            }
+        }
     }
 }

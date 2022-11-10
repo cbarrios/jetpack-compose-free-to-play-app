@@ -8,15 +8,16 @@ import androidx.lifecycle.viewModelScope
 import com.lalosapps.freetoplay.core.util.Resource
 import com.lalosapps.freetoplay.domain.model.Game
 import com.lalosapps.freetoplay.domain.repository.GamesRepository
+import com.lalosapps.freetoplay.domain.usecases.GetGamesFlowUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repository: GamesRepository
+    private val repository: GamesRepository,
+    getGamesFlowUseCase: GetGamesFlowUseCase
 ) : ViewModel() {
 
     var splashScreenVisible by mutableStateOf(true)
@@ -30,15 +31,17 @@ class MainViewModel @Inject constructor(
 
     private var originalList = listOf<Game>()
 
+    private val gamesFlow = getGamesFlowUseCase()
+
     init {
         viewModelScope.launch {
             val result = repository.getAllGames()
             _uiState.value = result
-            if (result is Resource.Success) {
-                _gamesList.value = result.data
-                originalList = result.data
+            gamesFlow.collect {
+                _gamesList.value = it
+                originalList = it
+                if (splashScreenVisible) splashScreenVisible = false
             }
-            splashScreenVisible = false
         }
     }
 

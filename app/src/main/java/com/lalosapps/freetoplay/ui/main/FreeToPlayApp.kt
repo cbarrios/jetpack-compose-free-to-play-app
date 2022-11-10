@@ -151,6 +151,7 @@ fun FreeToPlayApp(
                 HomeScreen(
                     uiState = uiState,
                     games = gamesList,
+                    scaffoldState = scaffoldState,
                     barTitle = barTitle,
                     onOpenDrawer = {
                         scope.launch {

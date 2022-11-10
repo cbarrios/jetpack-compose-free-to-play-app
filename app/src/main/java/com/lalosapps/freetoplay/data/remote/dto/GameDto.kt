@@ -1,6 +1,7 @@
 package com.lalosapps.freetoplay.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
+import com.lalosapps.freetoplay.data.local.room.entity.GameEntity
 import com.lalosapps.freetoplay.domain.model.Game
 
 data class GameDto(
@@ -29,5 +30,19 @@ data class GameDto(
         shortDescription,
         thumbnail,
         title
+    )
+
+    fun toGameEntity() = GameEntity(
+        developer,
+        freeToGameProfileUrl,
+        gameUrl,
+        genre,
+        platform,
+        publisher,
+        releaseDate,
+        shortDescription,
+        thumbnail,
+        title,
+        id
     )
 }

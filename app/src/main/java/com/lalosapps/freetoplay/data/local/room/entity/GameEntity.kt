@@ -30,6 +30,7 @@ data class GameEntity(
         releaseDate,
         shortDescription,
         thumbnail,
-        title
+        title,
+        isFavorite = false
     )
 }

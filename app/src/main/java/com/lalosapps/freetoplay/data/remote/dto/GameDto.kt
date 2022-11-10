@@ -29,7 +29,8 @@ data class GameDto(
         releaseDate,
         shortDescription,
         thumbnail,
-        title
+        title,
+        isFavorite = false
     )
 
     fun toGameEntity() = GameEntity(

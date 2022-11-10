@@ -11,5 +11,6 @@ data class Game(
     val releaseDate: String,
     val shortDescription: String,
     val thumbnail: String,
-    val title: String
+    val title: String,
+    val isFavorite: Boolean
 )

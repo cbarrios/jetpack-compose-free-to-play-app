@@ -146,7 +146,9 @@ fun FreeToPlayApp(
                         textStyle = MaterialTheme.typography.body1,
                         textColor = MaterialTheme.colors.onBackground,
                         onClick = {
-                            navController.navigate(Screen.FAVORITES)
+                            navController.navigate(Screen.FAVORITES) {
+                                launchSingleTop = true
+                            }
                             scope.launch {
                                 scaffoldState.drawerState.close()
                             }
@@ -173,7 +175,9 @@ fun FreeToPlayApp(
                         }
                     },
                     onSearch = {
-                        navController.navigate(Screen.SEARCH)
+                        navController.navigate(Screen.SEARCH) {
+                            launchSingleTop = true
+                        }
                     },
                     onGameClick = { gameId ->
                         navController.navigate(Screen.GameDetails.createRoute(gameId))

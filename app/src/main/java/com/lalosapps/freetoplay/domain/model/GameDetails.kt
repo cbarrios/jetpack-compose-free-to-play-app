@@ -29,6 +29,7 @@ data class GameDetails(
         releaseDate,
         shortDescription,
         thumbnail,
-        title
+        title,
+        isFavorite
     )
 }

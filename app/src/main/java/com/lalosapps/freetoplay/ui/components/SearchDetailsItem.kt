@@ -1,5 +1,6 @@
 package com.lalosapps.freetoplay.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -8,9 +9,11 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lalosapps.freetoplay.domain.model.Game
 
@@ -23,10 +26,26 @@ fun SearchDetailsItem(
         backgroundColor = MaterialTheme.colors.surface,
         shape = MaterialTheme.shapes.medium,
         elevation = 8.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .requiredHeight(150.dp)
-            .clickable { onItemClick(game.id) }
+        modifier = if (game.isFavorite) {
+            Modifier
+                .fillMaxWidth()
+                .requiredHeight(150.dp)
+                .clickable { onItemClick(game.id) }
+                .shadow(
+                    elevation = 16.dp,
+                    shape = MaterialTheme.shapes.medium,
+                    spotColor = MaterialTheme.colors.primary
+                )
+        } else {
+            Modifier
+                .fillMaxWidth()
+                .requiredHeight(150.dp)
+                .clickable { onItemClick(game.id) }
+        },
+        border = if (game.isFavorite) BorderStroke(
+            Dp.Hairline,
+            MaterialTheme.colors.primary
+        ) else null
     ) {
         Row(
             modifier = Modifier.fillMaxSize()

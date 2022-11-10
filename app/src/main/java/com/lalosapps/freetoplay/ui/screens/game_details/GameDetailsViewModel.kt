@@ -9,6 +9,7 @@ import com.lalosapps.freetoplay.domain.repository.GamesRepository
 import com.lalosapps.freetoplay.domain.usecases.GetGameDetailsFlowUseCase
 import com.lalosapps.freetoplay.ui.screens.base.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -27,15 +28,21 @@ class GameDetailsViewModel @Inject constructor(
     init {
         savedStateHandle.get<Int>(key = Screen.GameDetails.A1_INT_GAME_ID)?.let { gameId ->
             viewModelScope.launch {
-                val result = gamesRepository.getGame(gameId)
+                val result = async { gamesRepository.getGame(gameId) }
                 getGameDetailsFlowUseCase(gameId).collect {
                     if (it.isEmpty()) {
-                        _game.value = result
+                        _game.value = result.await()
                     } else {
                         _game.value = Resource.Success(it.first())
                     }
                 }
             }
+        }
+    }
+
+    fun toggleFavorite(id: Int, favorite: Boolean) {
+        viewModelScope.launch {
+            gamesRepository.toggleFavoriteGame(id, favorite)
         }
     }
 }

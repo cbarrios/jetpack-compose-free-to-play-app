@@ -5,11 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Warning
 import com.lalosapps.freetoplay.R
 import androidx.compose.runtime.Composable
@@ -45,14 +44,39 @@ fun GameDetailsScreen(
             onBackPress = onBackPress
         )
         is Resource.Success -> {
-            GameDetails(
-                gameDetails = uiState.data,
-                onBackPress = onBackPress,
-                onGameUrlClick = onGameUrlClick
-            )
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                floatingActionButtonPosition = FabPosition.End,
+                floatingActionButton = {
+                    FloatingActionButton(
+                        modifier = Modifier,
+                        backgroundColor = MaterialTheme.colors.background,
+                        contentColor = MaterialTheme.colors.primary,
+                        onClick = {
+                            viewModel.toggleFavorite(
+                                uiState.data.id,
+                                uiState.data.isFavorite
+                            )
+                        }
+                    ) {
+                        Icon(
+                            imageVector = if (uiState.data.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = null
+                        )
+                    }
+                }
+            ) {
+                GameDetails(
+                    modifier = Modifier.padding(it),
+                    gameDetails = uiState.data,
+                    onBackPress = onBackPress,
+                    onGameUrlClick = onGameUrlClick
+                )
+            }
         }
     }
 }
+
 
 @Composable
 fun LoadingScreen() {
@@ -93,9 +117,10 @@ fun ErrorScreen(
 fun GameDetails(
     gameDetails: GameDetails,
     onBackPress: () -> Unit,
-    onGameUrlClick: (String) -> Unit
+    onGameUrlClick: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize()) {
         GameDetailsNavBar(
             title = gameDetails.title,
             onBackPress = onBackPress

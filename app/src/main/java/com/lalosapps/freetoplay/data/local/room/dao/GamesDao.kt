@@ -25,4 +25,10 @@ interface GamesDao {
 
     @Query("SELECT * FROM game_details_entity WHERE id = :id")
     fun getGameDetailsFlow(id: Int): Flow<List<GameDetailsEntity>>
+
+    @Query("UPDATE game_details_entity SET favorite = :favorite WHERE id = :id")
+    suspend fun toggleFavoriteGameDetails(id: Int, favorite: Boolean)
+
+    @Query("SELECT * FROM game_details_entity WHERE id = :id")
+    suspend fun getGameDetails(id: Int): List<GameDetailsEntity>
 }

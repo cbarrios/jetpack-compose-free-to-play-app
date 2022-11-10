@@ -43,7 +43,7 @@ data class GameDetailsDto(
         isFavorite = false
     )
 
-    fun toGameDetailsEntity() = GameDetailsEntity(
+    fun toGameDetailsEntity(isFavorite: Boolean) = GameDetailsEntity(
         description,
         developer,
         freeToGameProfileUrl,
@@ -62,7 +62,7 @@ data class GameDetailsDto(
         status,
         thumbnail,
         title,
-        isFavorite = false,
+        isFavorite = isFavorite,
         id
     )
 }

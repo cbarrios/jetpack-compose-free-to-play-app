@@ -36,7 +36,13 @@ class DefaultGamesRepository @Inject constructor(
         return try {
             val response = gamesApi.getGame(gameId)
             response.body()?.let { dtoGame ->
-                gamesDao.saveGameDetails(dtoGame.toGameDetailsEntity())
+                val cache = gamesDao.getGameDetails(dtoGame.id)
+                if (cache.isNotEmpty()) {
+                    val isFavorite = cache.first().isFavorite
+                    gamesDao.saveGameDetails(dtoGame.toGameDetailsEntity(isFavorite))
+                } else {
+                    gamesDao.saveGameDetails(dtoGame.toGameDetailsEntity(false))
+                }
                 Resource.Success(dtoGame.toGameDetails())
             } ?: Resource.Error()
         } catch (t: Throwable) {
@@ -46,5 +52,15 @@ class DefaultGamesRepository @Inject constructor(
 
     override fun getGameFlow(id: Int): Flow<List<GameDetails>> {
         return gamesDao.getGameDetailsFlow(id).map { it.map { entity -> entity.toGameDetails() } }
+    }
+
+    override suspend fun toggleFavoriteGame(id: Int, favorite: Boolean): Boolean {
+        return try {
+            gamesDao.toggleFavoriteGameDetails(id, !favorite)
+            true
+        } catch (t: Throwable) {
+            t.printStackTrace()
+            false
+        }
     }
 }

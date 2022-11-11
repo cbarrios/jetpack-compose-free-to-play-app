@@ -1,7 +1,10 @@
 package com.lalosapps.freetoplay.ui.screens.favorites
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,9 +29,18 @@ fun FavoritesScreen(
             title = stringResource(id = R.string.my_games),
             onBackPress = onBackPress
         )
-        SearchDetails(
-            games = favorites,
-            onItemClick = onItemClick
-        )
+        if (favorites.isNotEmpty()) {
+            SearchDetails(
+                games = favorites,
+                onItemClick = onItemClick
+            )
+        } else {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = stringResource(R.string.nothing_yet),
+                    style = MaterialTheme.typography.body1
+                )
+            }
+        }
     }
 }

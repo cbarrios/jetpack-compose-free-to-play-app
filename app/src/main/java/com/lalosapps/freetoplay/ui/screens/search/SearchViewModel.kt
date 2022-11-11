@@ -38,8 +38,12 @@ class SearchViewModel @Inject constructor() : ViewModel() {
     }
 
     fun setGames(list: List<Game>) {
-        _games.value = list
         originalList = list
+        if (query.isEmpty()) {
+            _games.value = list
+        } else {
+            _games.value = list.filter { it.title.lowercase().contains(query.lowercase()) }
+        }
     }
 
     fun showSearchResults() {

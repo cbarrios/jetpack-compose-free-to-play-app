@@ -5,4 +5,5 @@
     <string name="web_games">Web Games</string>
     <string name="latest_games">Latest Games</string>
     <string name="my_games">My Games</string>
+    <string name="nothing_yet">Nothing yet.</string>
 </resources>

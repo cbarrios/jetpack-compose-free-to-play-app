@@ -27,6 +27,8 @@ fun GameCard(
         shape = MaterialTheme.shapes.small,
         modifier = if (game.isFavorite) {
             modifier
+                .fillMaxWidth()
+                .requiredHeight(300.dp)
                 .padding(8.dp)
                 .clickable { onClick() }
                 .shadow(
@@ -36,12 +38,17 @@ fun GameCard(
                 )
         } else {
             modifier
+                .fillMaxWidth()
+                .requiredHeight(300.dp)
                 .padding(8.dp)
                 .clickable { onClick() }
         },
         elevation = 8.dp,
         backgroundColor = MaterialTheme.colors.surface,
-        border = if (game.isFavorite) BorderStroke(Dp.Hairline, MaterialTheme.colors.primary) else null
+        border = if (game.isFavorite) BorderStroke(
+            Dp.Hairline,
+            MaterialTheme.colors.primary
+        ) else null
     ) {
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
@@ -51,7 +58,9 @@ fun GameCard(
                 url = game.thumbnail,
                 contentScale = ContentScale.Crop,
                 crossFade = 1000,
-                modifier = Modifier.fillMaxHeight(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.55f),
                 onLoading = {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
@@ -69,34 +78,28 @@ fun GameCard(
             )
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(3.dp),
+                    .fillMaxSize()
+                    .padding(8.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = game.title,
-                    modifier = Modifier.padding(5.dp),
+                    modifier = Modifier.padding(horizontal = 5.dp),
                     style = MaterialTheme.typography.body1,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colors.onSurface,
                     maxLines = 1
                 )
-                Box(
+                Text(
+                    text = game.shortDescription,
                     modifier = Modifier
                         .fillMaxWidth()
-                ) {
-                    Text(
-                        text = game.shortDescription,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 5.dp),
-                        style = MaterialTheme.typography.caption,
-                        color = MaterialTheme.colors.onSurface,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 3
-                    )
-                }
-                Spacer(modifier = Modifier.height(5.dp))
+                        .padding(horizontal = 5.dp),
+                    style = MaterialTheme.typography.caption,
+                    color = MaterialTheme.colors.onSurface,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 3
+                )
                 Row(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically,
@@ -117,7 +120,6 @@ fun GameCard(
                     Spacer(modifier = Modifier.width(3.dp))
                     Platform(platform = game.platform)
                 }
-                Spacer(modifier = Modifier.height(5.dp))
             }
         }
     }

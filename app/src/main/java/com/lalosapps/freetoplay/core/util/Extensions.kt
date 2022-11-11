@@ -15,6 +15,10 @@ fun LazyGridScope.header(
     )
 }
 
+fun List<Game>.getAllGenres(): List<String> {
+    return groupBy { it.genre }.keys.toList()
+}
+
 fun List<Game>.getRandomUrls(): List<String> {
     return takeRandomElements(3).map {
         it.thumbnail

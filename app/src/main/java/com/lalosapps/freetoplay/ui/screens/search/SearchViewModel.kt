@@ -4,14 +4,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.lalosapps.freetoplay.core.util.getAllGenres
 import com.lalosapps.freetoplay.domain.model.Game
+import com.lalosapps.freetoplay.domain.usecases.GetGamesFlowUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel @Inject constructor() : ViewModel() {
+class SearchViewModel @Inject constructor(
+    getGamesFlowUseCase: GetGamesFlowUseCase
+) : ViewModel() {
 
     var query by mutableStateOf("")
         private set
@@ -19,34 +23,101 @@ class SearchViewModel @Inject constructor() : ViewModel() {
     var showSearch by mutableStateOf(true)
         private set
 
+    var showFilter by mutableStateOf(false)
+        private set
+
     private val _games = MutableStateFlow<List<Game>>(emptyList())
     val games = _games.asStateFlow()
+
+    val allGenres = getGamesFlowUseCase()
+        .map { it.getAllGenres() }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
 
     var originalList = listOf<Game>()
         private set
 
+    private var filteredList = listOf<Game>()
+
+    private var genres = listOf<String>()
+
     fun onQueryChange(query: String) {
         this.query = query
         showSearch = query.isEmpty()
-        _games.value = originalList.filter { it.title.lowercase().contains(query.lowercase()) }
+        filterByGenresWithQuery(query)
     }
 
     fun onQueryClear() {
         this.query = ""
         showSearch = true
-        _games.value = originalList
+        filterByGenresWithQuery(query)
     }
 
     fun setGames(list: List<Game>) {
         originalList = list
-        if (query.isEmpty()) {
+        if (query.isEmpty() && genres.isEmpty()) {
             _games.value = list
         } else {
-            _games.value = list.filter { it.title.lowercase().contains(query.lowercase()) }
+            filterByGenresWithQuery(query)
         }
     }
 
     fun showSearchResults() {
         showSearch = true
+    }
+
+    fun onFilterToggle(value: Boolean) {
+        showFilter = value
+        if (!value) {
+            genres = emptyList()
+            filteredList = emptyList()
+            _games.value = originalList.filter { it.title.lowercase().contains(query.lowercase()) }
+        }
+    }
+
+    fun filterByGenre(genre: String) {
+        genres = if (genres.contains(genre)) {
+            genres - genre
+        } else {
+            genres + genre
+        }
+        val aux = mutableListOf<Game>()
+        genres.forEach { g ->
+            val list = originalList.filter { it.genre.lowercase() == g.lowercase() }
+            aux.addAll(list)
+        }
+        if (aux.isNotEmpty()) {
+            val filtered = aux.toList().filter { it.title.lowercase().contains(query.lowercase()) }
+            _games.value = filtered
+            filteredList = filtered
+        } else {
+            if (genres.isNotEmpty()) {
+                _games.value = emptyList()
+                filteredList = emptyList()
+            } else {
+                val filtered =
+                    originalList.filter { it.title.lowercase().contains(query.lowercase()) }
+                _games.value = filtered
+                filteredList = filtered
+            }
+        }
+    }
+
+    private fun filterByGenresWithQuery(query: String) {
+        if (genres.isEmpty()) {
+            _games.value =
+                originalList.filter { it.title.lowercase().contains(query.lowercase()) }
+        } else {
+            val aux = mutableListOf<Game>()
+            genres.forEach { g ->
+                val list = originalList.filter { it.genre.lowercase() == g.lowercase() }
+                aux.addAll(list)
+            }
+            filteredList = aux.toList()
+            _games.value = filteredList.filter { it.title.lowercase().contains(query.lowercase()) }
+        }
     }
 }

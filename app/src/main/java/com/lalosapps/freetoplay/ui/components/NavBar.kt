@@ -16,7 +16,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun GameDetailsNavBar(
     title: String,
-    onBackPress: () -> Unit
+    onBackPress: () -> Unit,
+    trailingIcon: @Composable (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
@@ -38,5 +39,6 @@ fun GameDetailsNavBar(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+        trailingIcon?.invoke()
     }
 }

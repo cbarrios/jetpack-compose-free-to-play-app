@@ -40,8 +40,6 @@ class SearchViewModel @Inject constructor(
     var originalList = listOf<Game>()
         private set
 
-    private var filteredList = listOf<Game>()
-
     private var genres = listOf<String>()
 
     fun onQueryChange(query: String) {
@@ -73,7 +71,6 @@ class SearchViewModel @Inject constructor(
         showFilter = value
         if (!value) {
             genres = emptyList()
-            filteredList = emptyList()
             _games.value = originalList.filter { it.title.lowercase().contains(query.lowercase()) }
         }
     }
@@ -92,16 +89,13 @@ class SearchViewModel @Inject constructor(
         if (aux.isNotEmpty()) {
             val filtered = aux.toList().filter { it.title.lowercase().contains(query.lowercase()) }
             _games.value = filtered
-            filteredList = filtered
         } else {
             if (genres.isNotEmpty()) {
                 _games.value = emptyList()
-                filteredList = emptyList()
             } else {
                 val filtered =
                     originalList.filter { it.title.lowercase().contains(query.lowercase()) }
                 _games.value = filtered
-                filteredList = filtered
             }
         }
     }
@@ -116,8 +110,7 @@ class SearchViewModel @Inject constructor(
                 val list = originalList.filter { it.genre.lowercase() == g.lowercase() }
                 aux.addAll(list)
             }
-            filteredList = aux.toList()
-            _games.value = filteredList.filter { it.title.lowercase().contains(query.lowercase()) }
+            _games.value = aux.toList().filter { it.title.lowercase().contains(query.lowercase()) }
         }
     }
 }

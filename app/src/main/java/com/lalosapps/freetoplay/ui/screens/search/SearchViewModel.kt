@@ -97,10 +97,18 @@ class SearchViewModel @Inject constructor(
         } else {
             genres + genre
         }
-        val aux = mutableListOf<Game>()
+        var aux = setOf<Game>()
         genres.forEach { g ->
             val list = originalList.filter { it.genre.lowercase() == g.lowercase() }
-            aux.addAll(list)
+            list.forEach { game ->
+                val found = aux.find { it.id == game.id }
+                if (found == null) {
+                    aux = aux + game
+                } else {
+                    aux = aux - found
+                    aux = aux + game
+                }
+            }
         }
         if (aux.isNotEmpty()) {
             val filtered = aux.toList().filter { it.title.lowercase().contains(query.lowercase()) }
@@ -121,10 +129,18 @@ class SearchViewModel @Inject constructor(
             _games.value =
                 originalList.filter { it.title.lowercase().contains(query.lowercase()) }
         } else {
-            val aux = mutableListOf<Game>()
+            var aux = setOf<Game>()
             genres.forEach { g ->
                 val list = originalList.filter { it.genre.lowercase() == g.lowercase() }
-                aux.addAll(list)
+                list.forEach { game ->
+                    val found = aux.find { it.id == game.id }
+                    if (found == null) {
+                        aux = aux + game
+                    } else {
+                        aux = aux - found
+                        aux = aux + game
+                    }
+                }
             }
             _games.value = aux.toList().filter { it.title.lowercase().contains(query.lowercase()) }
         }

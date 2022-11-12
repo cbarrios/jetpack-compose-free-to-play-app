@@ -12,7 +12,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -63,21 +62,19 @@ fun SearchScreen(
                 contentPadding = PaddingValues(bottom = 8.dp, start = 8.dp, end = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(allGenres, key = { it }) {
-                    var toggled by rememberSaveable { mutableStateOf(false) }
+                items(allGenres, key = { it.text }) {
                     Chip(
                         borderWidth = 1.dp,
                         modifier = Modifier.clickable {
-                            toggled = !toggled
-                            viewModel.filterByGenre(it)
+                            viewModel.filterByGenre(it.text)
                         },
-                        backgroundColor = if (toggled) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
-                        borderColor = if (toggled) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
+                        backgroundColor = if (it.checked) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
+                        borderColor = if (it.checked) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
                     ) {
                         Text(
-                            text = it,
+                            text = it.text,
                             style = MaterialTheme.typography.caption,
-                            color = if (toggled) MaterialTheme.colors.onPrimary else MaterialTheme.colors.onSurface,
+                            color = if (it.checked) MaterialTheme.colors.onPrimary else MaterialTheme.colors.onSurface,
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
                         )
                     }

@@ -10,6 +10,7 @@ import com.lalosapps.freetoplay.domain.model.Game
 import com.lalosapps.freetoplay.domain.usecases.GetGamesFlowUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,13 +30,20 @@ class SearchViewModel @Inject constructor(
     private val _games = MutableStateFlow<List<Game>>(emptyList())
     val games = _games.asStateFlow()
 
-    val allGenres = getGamesFlowUseCase()
-        .map { it.getAllGenres() }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            emptyList()
-        )
+    private val _allGenres = MutableStateFlow<List<ChipData>>(emptyList())
+    val allGenres = _allGenres.asStateFlow()
+
+    private var originalGenres = listOf<String>()
+
+    init {
+        viewModelScope.launch {
+            getGamesFlowUseCase()
+                .map { it.getAllGenres() }
+                .collect {
+                    originalGenres = it
+                }
+        }
+    }
 
     var originalList = listOf<Game>()
         private set
@@ -68,6 +76,7 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onFilterToggle(value: Boolean) {
+        _allGenres.value = originalGenres.map { ChipData(it, false) }
         showFilter = value
         if (!value) {
             genres = emptyList()
@@ -75,7 +84,14 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    private fun toggleChipData(text: String) {
+        val current = _allGenres.value
+        _allGenres.value =
+            current.map { if (it.text == text) it.copy(checked = !it.checked) else it }
+    }
+
     fun filterByGenre(genre: String) {
+        toggleChipData(genre)
         genres = if (genres.contains(genre)) {
             genres - genre
         } else {

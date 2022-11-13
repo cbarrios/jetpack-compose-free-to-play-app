@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.lalosapps.freetoplay.core.util.getAllGenres
 import com.lalosapps.freetoplay.domain.model.Game
 import com.lalosapps.freetoplay.domain.usecases.GetGamesFlowUseCase
+import com.lalosapps.freetoplay.ui.screens.base.ChipData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

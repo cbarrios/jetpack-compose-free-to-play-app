@@ -1,4 +1,4 @@
-package com.lalosapps.freetoplay.ui.screens.search
+package com.lalosapps.freetoplay.ui.screens.base
 
 data class ChipData(
     val text: String,

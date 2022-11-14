@@ -136,7 +136,7 @@ fun GamesScreen(
         Box {
             val gridState = rememberLazyGridState()
             val scope = rememberCoroutineScope()
-            val randomUrls = remember { games.getRandomUrls() }
+            val randomUrls = remember(games) { games.getRandomUrls() }
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 state = gridState

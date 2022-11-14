@@ -8,6 +8,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,6 +21,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.delay
 
 @ExperimentalPagerApi
 @Composable
@@ -36,7 +38,14 @@ fun CarouselView(
         contentAlignment = Alignment.TopCenter
     ) {
         val pagerState = rememberPagerState(0)
-
+        LaunchedEffect(key1 = Unit) {
+            while (true) {
+                delay(5000)
+                var next = pagerState.currentPage + 1
+                if (next == pagerState.pageCount) next = 0
+                pagerState.animateScrollToPage(page = next)
+            }
+        }
         HorizontalPager(
             count = urls.size,
             state = pagerState,

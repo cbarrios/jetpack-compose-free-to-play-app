@@ -6,11 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,6 +60,17 @@ fun FreeToPlayApp(
 
     val defaultTitle = stringResource(id = R.string.app_name)
     var barTitle by rememberSaveable { mutableStateOf(defaultTitle) }
+
+    var showMessage by rememberSaveable { mutableStateOf(true) }
+    if (uiState is Resource.Error && gamesList.isNotEmpty()) {
+        LaunchedEffect(Unit) {
+            if (showMessage) {
+                showMessage = false
+                scaffoldState.snackbarHostState.showSnackbar("Offline Mode")
+            }
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         scaffoldState = scaffoldState,
@@ -167,7 +174,6 @@ fun FreeToPlayApp(
                 HomeScreen(
                     uiState = uiState,
                     games = gamesList,
-                    scaffoldState = scaffoldState,
                     barTitle = barTitle,
                     onOpenDrawer = {
                         scope.launch {

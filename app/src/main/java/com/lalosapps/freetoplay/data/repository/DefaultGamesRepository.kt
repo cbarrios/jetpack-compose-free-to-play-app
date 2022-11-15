@@ -1,5 +1,6 @@
 package com.lalosapps.freetoplay.data.repository
 
+import com.lalosapps.freetoplay.core.util.DataSource
 import com.lalosapps.freetoplay.core.util.Resource
 import com.lalosapps.freetoplay.data.local.room.dao.GamesDao
 import com.lalosapps.freetoplay.data.remote.api.GamesApi
@@ -15,14 +16,19 @@ class DefaultGamesRepository @Inject constructor(
     private val gamesDao: GamesDao
 ) : GamesRepository {
 
-    override suspend fun getAllGames(): Resource<List<Game>> {
+    override suspend fun getAllGames(source: DataSource): Resource<List<Game>> {
         return try {
-            val response = gamesApi.getAllGames()
-            response.body()?.let { dtoList ->
-                gamesDao.clearAllGames()
-                gamesDao.saveAllGames(dtoList.map { it.toGameEntity() })
-                Resource.Success(dtoList.map { it.toGame() })
-            } ?: Resource.Error(emptyList())
+            if (source == DataSource.Remote) {
+                val response = gamesApi.getAllGames()
+                response.body()?.let { dtoList ->
+                    gamesDao.clearAllGames()
+                    gamesDao.saveAllGames(dtoList.map { it.toGameEntity() })
+                    Resource.Success(dtoList.map { it.toGame() })
+                } ?: Resource.Error(emptyList())
+            } else {
+                val cachedGames = gamesDao.getAllGames().map { it.toGame() }
+                Resource.Success(cachedGames)
+            }
         } catch (t: Throwable) {
             Resource.Error(error = t)
         }

@@ -10,7 +10,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -33,15 +32,14 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     uiState: Resource<List<Game>>,
     games: List<Game>,
-    scaffoldState: ScaffoldState,
     barTitle: String,
     onOpenDrawer: () -> Unit,
     onSearch: () -> Unit,
     onGameClick: (Int) -> Unit
 ) {
-    when (uiState) {
-        is Resource.Error -> {
-            if (games.isEmpty()) {
+    if (games.isEmpty()) {
+        when (uiState) {
+            is Resource.Error -> {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -59,39 +57,22 @@ fun HomeScreen(
                         textAlign = TextAlign.Center
                     )
                 }
-            } else {
-                var showMessage by rememberSaveable { mutableStateOf(true) }
-                LaunchedEffect(Unit) {
-                    if (showMessage) {
-                        showMessage = false
-                        scaffoldState.snackbarHostState.showSnackbar("Offline Mode")
-                    }
-                }
-                GamesScreen(
-                    games = games,
-                    barTitle = barTitle,
-                    onOpenDrawer = onOpenDrawer,
-                    onSearch = onSearch,
-                    onGameClick = onGameClick
-                )
             }
-        }
-        is Resource.Success -> {
-            if (games.isEmpty()) {
+            is Resource.Success -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(text = "Sorry, no games available.")
                 }
-            } else {
-                GamesScreen(
-                    games = games,
-                    barTitle = barTitle,
-                    onOpenDrawer = onOpenDrawer,
-                    onSearch = onSearch,
-                    onGameClick = onGameClick
-                )
             }
+            else -> Unit
         }
-        else -> Unit
+    } else {
+        GamesScreen(
+            games = games,
+            barTitle = barTitle,
+            onOpenDrawer = onOpenDrawer,
+            onSearch = onSearch,
+            onGameClick = onGameClick
+        )
     }
 }
 

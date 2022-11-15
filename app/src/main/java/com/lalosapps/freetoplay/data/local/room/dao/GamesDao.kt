@@ -15,6 +15,9 @@ interface GamesDao {
     suspend fun saveAllGames(games: List<GameEntity>)
 
     @Query("SELECT * FROM game_entity")
+    suspend fun getAllGames(): List<GameEntity>
+
+    @Query("SELECT * FROM game_entity")
     fun getGamesFlow(): Flow<List<GameEntity>>
 
     @Query("DELETE from game_entity")

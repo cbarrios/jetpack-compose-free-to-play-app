@@ -49,28 +49,33 @@ class MainViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val localResult = repository.getAllGames(DataSource.Local)
-            val cachedGames = (localResult as Resource.Success).data
-            if (cachedGames.isEmpty()) {
-                val remoteResult = repository.getAllGames(DataSource.Remote)
-                _uiState.value = remoteResult
-            } else {
-                _uiState.value = localResult
-                launch {
-                    val res = repository.getAllGames(DataSource.Remote)
-                    if (res is Resource.Error) {
-                        _uiState.value = res
+            if (localResult is Resource.Success) {
+                val cachedGames = localResult.data
+                if (cachedGames.isEmpty()) {
+                    val remoteResult = repository.getAllGames(DataSource.Remote)
+                    _uiState.value = remoteResult
+                } else {
+                    _uiState.value = localResult
+                    launch {
+                        val res = repository.getAllGames(DataSource.Remote)
+                        if (res is Resource.Error) {
+                            _uiState.value = res
+                        }
                     }
                 }
-            }
-            gamesFlow.collect {
-                originalList = it
-                when (gameType) {
-                    GameType.All -> setAllGames()
-                    GameType.Pc -> setPcGames()
-                    GameType.Web -> setWebGames()
-                    GameType.Latest -> setLatestGames()
+                gamesFlow.collect {
+                    originalList = it
+                    when (gameType) {
+                        GameType.All -> setAllGames()
+                        GameType.Pc -> setPcGames()
+                        GameType.Web -> setWebGames()
+                        GameType.Latest -> setLatestGames()
+                    }
+                    if (splashScreenVisible) splashScreenVisible = false
                 }
-                if (splashScreenVisible) splashScreenVisible = false
+            } else {
+                _uiState.value = localResult
+                splashScreenVisible = false
             }
         }
     }

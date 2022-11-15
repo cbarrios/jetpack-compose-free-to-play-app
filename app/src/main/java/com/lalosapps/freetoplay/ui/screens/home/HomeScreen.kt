@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.lalosapps.freetoplay.R
 import com.lalosapps.freetoplay.core.util.Resource
+import com.lalosapps.freetoplay.core.util.getGameIdFromThumbnail
 import com.lalosapps.freetoplay.core.util.getRandomUrls
 import com.lalosapps.freetoplay.core.util.header
 import com.lalosapps.freetoplay.domain.model.Game
@@ -149,7 +150,12 @@ fun GamesScreen(
                             .padding(8.dp),
                         urls = randomUrls,
                         shape = MaterialTheme.shapes.medium,
-                        contentScale = ContentScale.FillBounds
+                        contentScale = ContentScale.FillBounds,
+                        clickable = true,
+                        onImageClick = { image ->
+                            val gameId = games.getGameIdFromThumbnail(image)
+                            gameId?.let { onGameClick(it) }
+                        }
                     )
                 }
                 items(items = games, key = { it.id }) { game ->

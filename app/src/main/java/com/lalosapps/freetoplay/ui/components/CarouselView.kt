@@ -1,6 +1,7 @@
 package com.lalosapps.freetoplay.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -31,7 +32,9 @@ fun CarouselView(
     contentScale: ContentScale = ContentScale.Crop,
     pagerIndicatorColor: Color = MaterialTheme.colors.primary,
     shape: Shape = RectangleShape,
-    crossFade: Int? = null
+    crossFade: Int? = null,
+    clickable: Boolean = false,
+    onImageClick: (String) -> Unit = {}
 ) {
     Box(
         modifier = modifier,
@@ -58,7 +61,11 @@ fun CarouselView(
                 url = urls[index],
                 crossFade = crossFade,
                 contentScale = contentScale,
-                modifier = Modifier.fillMaxSize(),
+                modifier = if (clickable) Modifier
+                    .fillMaxSize()
+                    .clickable {
+                        onImageClick(urls[index])
+                    } else Modifier.fillMaxSize(),
                 onLoading = {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()

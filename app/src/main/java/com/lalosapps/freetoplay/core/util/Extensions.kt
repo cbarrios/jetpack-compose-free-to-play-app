@@ -30,3 +30,7 @@ fun <T> List<T>.takeRandomElements(numberOfElements: Int): List<T> {
         asSequence().shuffled().take(numberOfElements).toList()
     }
 }
+
+fun List<Game>.getGameIdFromThumbnail(thumbnail: String): Int? {
+    return find { it.thumbnail == thumbnail }?.id
+}

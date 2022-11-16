@@ -17,7 +17,8 @@ import androidx.compose.ui.unit.dp
 fun GameDetailsNavBar(
     title: String,
     onBackPress: () -> Unit,
-    trailingIcon: @Composable (() -> Unit)? = null
+    badge: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
 ) {
     Row(
         modifier = Modifier
@@ -34,11 +35,13 @@ fun GameDetailsNavBar(
         }
         Spacer(modifier = Modifier.width(16.dp))
         Text(
+            modifier = if (badge == null && trailingIcon == null) Modifier else Modifier.widthIn(max = 150.dp),
             text = title,
             style = MaterialTheme.typography.h6,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+        badge?.invoke()
         trailingIcon?.invoke()
     }
 }

@@ -186,7 +186,9 @@ fun FreeToPlayApp(
                         }
                     },
                     onGameClick = { gameId ->
-                        navController.navigate(Screen.GameDetails.createRoute(gameId))
+                        navController.navigate(Screen.GameDetails.createRoute(gameId)) {
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
@@ -211,7 +213,9 @@ fun FreeToPlayApp(
                     barTitle = barTitle,
                     onBackPress = { navController.navigateUp() },
                     onItemClick = { gameId ->
-                        navController.navigate(Screen.GameDetails.createRoute(gameId))
+                        navController.navigate(Screen.GameDetails.createRoute(gameId)) {
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
@@ -219,7 +223,9 @@ fun FreeToPlayApp(
                 FavoritesScreen(
                     onBackPress = { navController.navigateUp() },
                     onItemClick = { gameId ->
-                        navController.navigate(Screen.GameDetails.createRoute(gameId))
+                        navController.navigate(Screen.GameDetails.createRoute(gameId)) {
+                            launchSingleTop = true
+                        }
                     }
                 )
             }

@@ -8,8 +8,13 @@ import com.lalosapps.freetoplay.data.repository.fake.FakeDaoDataSource
 import com.lalosapps.freetoplay.data.repository.fake.FakeGamesApi
 import com.lalosapps.freetoplay.data.repository.fake.FakeGamesDao
 import com.lalosapps.freetoplay.domain.model.Game
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -23,6 +28,7 @@ class DefaultGamesRepositoryTest {
 
     @Before
     fun setup() {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
         api = FakeGamesApi()
         dao = FakeGamesDao()
         repository = DefaultGamesRepository(api, dao)
@@ -144,5 +150,53 @@ class DefaultGamesRepositoryTest {
             Resource.Error<Game>(error = dao.exception),
             actualResource
         )
+    }
+
+    @Test
+    fun getGamesFlow_onPopulatedCache_verifyCachedGames() = runTest {
+        // Given
+        FakeDaoDataSource.populateGames()
+
+        // When
+        val job = launch(UnconfinedTestDispatcher()) {
+            val expected = dao.getGamesFlow().map { it.map { entity -> entity.toGame() } }.first()
+            val actual = repository.getGamesFlow().first()
+
+            // Then
+            assertEquals(
+                true,
+                expected.isNotEmpty() && actual.isNotEmpty()
+            )
+            assertEquals(
+                expected,
+                actual
+            )
+        }
+
+        job.cancel()
+    }
+
+    @Test
+    fun getGamesFlow_onEmptyCache_verifyEmptyList() = runTest {
+        // Given
+        FakeDaoDataSource.populateGames(true)
+
+        // When
+        val job = launch(UnconfinedTestDispatcher()) {
+            val actual = repository.getGamesFlow().first()
+
+            // Then
+            assertEquals(
+                true,
+                actual.isEmpty()
+            )
+        }
+
+        job.cancel()
+    }
+
+    @Before
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 }

@@ -23,6 +23,7 @@ object FakeDaoDataSource {
         } else {
             emptyList()
         }
+        fakeGamesFlow.value = games
     }
 
     fun saveAllGames(list: List<GameEntity>) {

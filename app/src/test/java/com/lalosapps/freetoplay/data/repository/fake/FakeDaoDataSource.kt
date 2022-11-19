@@ -26,9 +26,18 @@ object FakeDaoDataSource {
         fakeGamesFlow.value = games
     }
 
-    fun populateGameDetailsList(startEmpty: Boolean = false, startFavorite: Boolean = false) {
+    fun populateGameDetailsList(
+        startEmpty: Boolean = false,
+        startFavorite: Boolean = false,
+        startDifferentId: Boolean = false
+    ) {
         gameDetailsList = if (!startEmpty) {
-            listOf(FakeApiDataSource.gameDetailsDto.toGameDetailsEntity(startFavorite))
+            val dto = FakeApiDataSource.gameDetailsDto
+            if (!startDifferentId) {
+                listOf(dto.toGameDetailsEntity(startFavorite))
+            } else {
+                listOf(dto.copy(id = dto.id * 2).toGameDetailsEntity(startFavorite))
+            }
         } else {
             emptyList()
         }

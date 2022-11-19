@@ -316,6 +316,72 @@ class DefaultGamesRepositoryTest {
         )
     }
 
+    @Test
+    fun getGameFlow_onPopulatedCacheWithThisGameDetails_verifyResultListWithSingleGameDetailsAndSameAsInCache() =
+        runTest {
+            // Given
+            FakeDaoDataSource.populateGameDetailsList()
+
+            // When
+            val job = launch(UnconfinedTestDispatcher()) {
+                val expected = FakeDaoDataSource
+                    .getGameDetailsFlow(FakeApiDataSource.gameDetailsDto.id)
+                    .map { it.map { entity -> entity.toGameDetails() } }
+                    .first()
+                val actual = repository.getGameFlow(FakeApiDataSource.gameDetailsDto.id).first()
+
+                // Then
+                assertEquals(
+                    1,
+                    actual.size
+                )
+                assertEquals(
+                    true,
+                    expected.contains(actual.first())
+                )
+            }
+
+            job.cancel()
+        }
+
+    @Test
+    fun getGameFlow_onPopulatedCacheWithAnotherGameDetails_verifyResultListIsEmpty() = runTest {
+        // Given
+        FakeDaoDataSource.populateGameDetailsList(startDifferentId = true)
+
+        // When
+        val job = launch(UnconfinedTestDispatcher()) {
+            val actual = repository.getGameFlow(FakeApiDataSource.gameDetailsDto.id).first()
+
+            // Then
+            assertEquals(
+                true,
+                actual.isEmpty()
+            )
+        }
+
+        job.cancel()
+    }
+
+    @Test
+    fun getGameFlow_onEmptyCache_verifyGameDetailsListIsEmpty() = runTest {
+        // Given
+        FakeDaoDataSource.populateGameDetailsList(startEmpty = true)
+
+        // When
+        val job = launch(UnconfinedTestDispatcher()) {
+            val actual = repository.getGameFlow(FakeApiDataSource.gameDetailsDto.id).first()
+
+            // Then
+            assertEquals(
+                true,
+                actual.isEmpty()
+            )
+        }
+
+        job.cancel()
+    }
+
     @Before
     fun tearDown() {
         Dispatchers.resetMain()

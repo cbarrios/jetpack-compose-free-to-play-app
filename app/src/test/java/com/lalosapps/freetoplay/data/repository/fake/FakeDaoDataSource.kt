@@ -26,6 +26,15 @@ object FakeDaoDataSource {
         fakeGamesFlow.value = games
     }
 
+    fun populateGameDetailsList(startEmpty: Boolean = false, startFavorite: Boolean = false) {
+        gameDetailsList = if (!startEmpty) {
+            listOf(FakeApiDataSource.gameDetailsDto.toGameDetailsEntity(startFavorite))
+        } else {
+            emptyList()
+        }
+        fakeGameDetailsListFlow.value = gameDetailsList
+    }
+
     fun saveAllGames(list: List<GameEntity>) {
         list.forEach { game ->
             val found = games.find { it.id == game.id }
@@ -44,6 +53,8 @@ object FakeDaoDataSource {
     fun getAllGamesToDomainModel() = games.map { it.toGame() }
 
     fun getAllGamesFlow() = gamesFlow
+
+    fun getGameDetailsList() = gameDetailsList
 
     fun clearAllGames() {
         games = emptyList()

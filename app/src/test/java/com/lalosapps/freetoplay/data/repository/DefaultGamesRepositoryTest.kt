@@ -8,6 +8,7 @@ import com.lalosapps.freetoplay.data.repository.fake.FakeDaoDataSource
 import com.lalosapps.freetoplay.data.repository.fake.FakeGamesApi
 import com.lalosapps.freetoplay.data.repository.fake.FakeGamesDao
 import com.lalosapps.freetoplay.domain.model.Game
+import com.lalosapps.freetoplay.domain.model.GameDetails
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -193,6 +194,126 @@ class DefaultGamesRepositoryTest {
         }
 
         job.cancel()
+    }
+
+    @Test
+    fun getGame_onHappyPathUpdatedGameFromApiAndGameAlreadyCached_verifyGameRetainsFavoriteAndGetsUpdatedAndResourceSuccessWithGameFromApi() =
+        runTest {
+            // Given
+            api.apply { getUpdatedGameDetailsDto = true }
+            FakeDaoDataSource.populateGameDetailsList(startFavorite = true) // test should pass for both values
+
+            // When
+            val oldCachedGame = FakeDaoDataSource.getGameDetailsList().first()
+            val actualResource = repository.getGame(oldCachedGame.id)
+            val updatedCachedGame = FakeDaoDataSource.getGameDetailsList().first()
+
+            // Then
+            assertEquals(
+                true,
+                updatedCachedGame.isFavorite == oldCachedGame.isFavorite
+            )
+            assertEquals(
+                true,
+                oldCachedGame != updatedCachedGame
+            )
+            assertEquals(
+                Resource.Success(FakeApiDataSource.updatedGameDetailsDto.toGameDetails()),
+                actualResource
+            )
+        }
+
+    @Test
+    fun getGame_onHappyPathSameGameFromApiAndGameAlreadyCached_verifyGameRetainsFavoriteAndGetsReplacedWithSameContentAndResourceSuccessWithGameFromApi() =
+        runTest {
+            // Given
+            api.apply { getUpdatedGameDetailsDto = false }
+            FakeDaoDataSource.populateGameDetailsList(startFavorite = true) // test should pass for both values
+
+            // When
+            val oldCachedGame = FakeDaoDataSource.getGameDetailsList().first()
+            val actualResource = repository.getGame(oldCachedGame.id)
+            val updatedCachedGame = FakeDaoDataSource.getGameDetailsList().first()
+
+            // Then
+            assertEquals(
+                true,
+                updatedCachedGame.isFavorite == oldCachedGame.isFavorite
+            )
+            assertEquals(
+                true,
+                oldCachedGame == updatedCachedGame
+            )
+            assertEquals(
+                Resource.Success(FakeApiDataSource.gameDetailsDto.toGameDetails()),
+                actualResource
+            )
+        }
+
+    @Test
+    fun getGame_onHappyPathNewGameFromApiAndGameNotCached_verifyGameCachedWithFavoriteToFalseAndResourceSuccessWithGameFromApi() =
+        runTest {
+            // Given
+            FakeDaoDataSource.populateGameDetailsList(startEmpty = true)
+
+            // When
+            val actualResource = repository.getGame(FakeApiDataSource.gameDetailsDto.id)
+            val cachedGame = FakeDaoDataSource.getGameDetailsList().first()
+
+            // Then
+            assertEquals(
+                FakeApiDataSource.gameDetailsDto.toGameDetailsEntity(false),
+                cachedGame
+            )
+            assertEquals(
+                Resource.Success(FakeApiDataSource.gameDetailsDto.toGameDetails()),
+                actualResource
+            )
+        }
+
+    @Test
+    fun getGame_onApiErrorResponse_verifyResourceError() = runTest {
+        // Given
+        api.apply { errorResponse = true }
+
+        // When
+        val actualResource = repository.getGame(FakeApiDataSource.gameDetailsDto.id)
+
+        // Then
+        assertEquals(
+            Resource.Error<GameDetails>(),
+            actualResource
+        )
+    }
+
+    @Test
+    fun getGame_onApiException_verifyResourceErrorWithThrowable() = runTest {
+        // Given
+        api.apply { throwsException = true }
+
+        // When
+        val actualResource = repository.getGame(FakeApiDataSource.gameDetailsDto.id)
+
+        // Then
+        assertEquals(
+            Resource.Error<GameDetails>(error = api.exception),
+            actualResource
+        )
+    }
+
+    @Test
+    fun getGame_onDatabaseException_verifyResourceErrorWithThrowable() = runTest {
+        // Given
+        dao.apply { throwsException = true }
+
+        // When
+        val actualResource = repository.getGame(FakeApiDataSource.gameDetailsDto.id)
+
+        // Then
+        assertEquals(
+            Resource.Error<GameDetails>(error = dao.exception),
+            actualResource
+        )
     }
 
     @Before

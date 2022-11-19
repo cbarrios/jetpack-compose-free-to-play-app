@@ -16,6 +16,7 @@ class FakeGamesApi : GamesApi {
         Throwable("Something went wrong when getting this game details.")
     var errorResponse = false
     var emptyGameDtoList = false
+    var getUpdatedGameDetailsDto = false
 
     override suspend fun getAllGames(): Response<List<GameDto>> {
         if (throwsException) {
@@ -39,6 +40,9 @@ class FakeGamesApi : GamesApi {
         if (errorResponse) {
             return Response.error(500, EMPTY_RESPONSE)
         }
-        return Response.success(200, FakeApiDataSource.gameDetailsDto)
+        return Response.success(
+            200,
+            if (!getUpdatedGameDetailsDto) FakeApiDataSource.gameDetailsDto else FakeApiDataSource.updatedGameDetailsDto
+        )
     }
 }

@@ -382,6 +382,87 @@ class DefaultGamesRepositoryTest {
         job.cancel()
     }
 
+    @Test
+    fun toggleFavoriteGame_onGameIdFoundAndNotFavorite_verifyGameSetAsFavoriteAndReturnsTrue() =
+        runTest {
+            // Given
+            FakeDaoDataSource.populateGameDetailsList(startFavorite = false)
+
+            // When
+            val game = FakeDaoDataSource.getGameDetailsList().first()
+            val actual = repository.toggleFavoriteGame(game.id, game.isFavorite)
+            val updatedGame = FakeDaoDataSource.getGameDetailsList().first()
+
+            // Then
+            assertEquals(
+                true,
+                updatedGame.isFavorite
+            )
+            assertEquals(
+                true,
+                actual
+            )
+        }
+
+    @Test
+    fun toggleFavoriteGame_onGameIdFoundAndFavorite_verifyGameSetAsNotFavoriteAndReturnsTrue() =
+        runTest {
+            // Given
+            FakeDaoDataSource.populateGameDetailsList(startFavorite = true)
+
+            // When
+            val game = FakeDaoDataSource.getGameDetailsList().first()
+            val actual = repository.toggleFavoriteGame(game.id, game.isFavorite)
+            val updatedGame = FakeDaoDataSource.getGameDetailsList().first()
+
+            // Then
+            assertEquals(
+                false,
+                updatedGame.isFavorite
+            )
+            assertEquals(
+                true,
+                actual
+            )
+        }
+
+    @Test
+    fun toggleFavoriteGame_onGameIdNotFound_verifyDatabaseListUnchangedAndReturnsTrue() = runTest {
+        // Given
+        FakeDaoDataSource.populateGameDetailsList(startEmpty = false) // should pass for both values
+
+        // When
+        val list = FakeDaoDataSource.getGameDetailsList()
+        val actual = repository.toggleFavoriteGame(-1, false)
+        val newList = FakeDaoDataSource.getGameDetailsList()
+
+        // Then
+        assertEquals(
+            list,
+            newList
+        )
+        assertEquals(
+            true,
+            actual
+        )
+    }
+
+    @Test
+    fun toggleFavoriteGame_onDatabaseException_verifyReturnsFalse() = runTest {
+        // Given
+        FakeDaoDataSource.populateGameDetailsList(startEmpty = false) // should pass for both values
+        dao.apply { throwsException = true }
+
+        // When
+        val actual = repository.toggleFavoriteGame(-1, false)
+
+        // Then
+        assertEquals(
+            false,
+            actual
+        )
+    }
+
     @Before
     fun tearDown() {
         Dispatchers.resetMain()

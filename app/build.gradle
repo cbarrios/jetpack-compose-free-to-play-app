@@ -98,4 +98,7 @@ dependencies {
 
     // runTest (unit testing)
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
+
+    // mock web server (unit testing)
+    testImplementation "com.squareup.okhttp3:mockwebserver:5.0.0-alpha.10"
 }

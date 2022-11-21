@@ -1,12 +1,9 @@
-package com.lalosapps.freetoplay.data.repository
+package com.lalosapps.freetoplay.data.repository.fake
 
 import com.lalosapps.freetoplay.core.util.DataSource
 import com.lalosapps.freetoplay.core.util.Resource
 import com.lalosapps.freetoplay.data.local.room.entity.GameEntity
-import com.lalosapps.freetoplay.data.repository.fake.FakeApiDataSource
-import com.lalosapps.freetoplay.data.repository.fake.FakeDaoDataSource
-import com.lalosapps.freetoplay.data.repository.fake.FakeGamesApi
-import com.lalosapps.freetoplay.data.repository.fake.FakeGamesDao
+import com.lalosapps.freetoplay.data.repository.DefaultGamesRepository
 import com.lalosapps.freetoplay.domain.model.Game
 import com.lalosapps.freetoplay.domain.model.GameDetails
 import kotlinx.coroutines.*
@@ -16,12 +13,13 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DefaultGamesRepositoryTest {
+class DefaultGamesRepositoryFakeTest {
 
     private lateinit var repository: DefaultGamesRepository
     private lateinit var api: FakeGamesApi
@@ -530,7 +528,7 @@ class DefaultGamesRepositoryTest {
         job.cancel()
     }
 
-    @Before
+    @After
     fun tearDown() {
         Dispatchers.resetMain()
     }

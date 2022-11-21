@@ -463,6 +463,73 @@ class DefaultGamesRepositoryTest {
         )
     }
 
+    @Test
+    fun getFavoritesFlow_onPopulatedCacheWithSingleFavorite_verifyResultListSameAsInCache() =
+        runTest {
+            // Given
+            FakeDaoDataSource.populateGameDetailsList(startFavorite = true)
+
+            // When
+            val job = launch(UnconfinedTestDispatcher()) {
+                val actual = repository.getFavoritesFlow().first()
+                val expected = FakeDaoDataSource.getGameDetailsList().map { it.toGameDetails() }
+
+                // Then
+                assertEquals(
+                    1,
+                    actual.size
+                )
+                assertEquals(
+                    true,
+                    expected.contains(actual.first())
+                )
+                assertEquals(
+                    expected,
+                    actual
+                )
+            }
+
+            job.cancel()
+        }
+
+    @Test
+    fun getFavoritesFlow_onPopulatedCacheWithSingleNotFavorite_verifyResultListIsEmpty() = runTest {
+        // Given
+        FakeDaoDataSource.populateGameDetailsList(startFavorite = false)
+
+        // When
+        val job = launch(UnconfinedTestDispatcher()) {
+            val actual = repository.getFavoritesFlow().first()
+
+            // Then
+            assertEquals(
+                true,
+                actual.isEmpty()
+            )
+        }
+
+        job.cancel()
+    }
+
+    @Test
+    fun getFavoritesFlow_onEmptyCache_verifyResultListIsEmpty() = runTest {
+        // Given
+        FakeDaoDataSource.populateGameDetailsList(startEmpty = true)
+
+        // When
+        val job = launch(UnconfinedTestDispatcher()) {
+            val actual = repository.getFavoritesFlow().first()
+
+            // Then
+            assertEquals(
+                true,
+                actual.isEmpty()
+            )
+        }
+
+        job.cancel()
+    }
+
     @Before
     fun tearDown() {
         Dispatchers.resetMain()

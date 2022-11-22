@@ -6,6 +6,7 @@ import com.lalosapps.freetoplay.data.remote.api.GamesApi
 import com.lalosapps.freetoplay.data.repository.DefaultGamesRepository
 import com.lalosapps.freetoplay.data.repository.fake.FakeGamesDao
 import com.lalosapps.freetoplay.domain.model.Game
+import com.lalosapps.freetoplay.domain.model.GameDetails
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.runTest
 import okhttp3.OkHttpClient
@@ -122,7 +123,75 @@ class DefaultGamesRepositoryMockWebServerTest {
 
         // When
         val actualResource = repository.getAllGames(DataSource.Remote)
-        println(actualResource)
+
+        // Then
+        assertEquals(
+            true,
+            actualResource is Resource.Error
+        )
+        assertEquals(
+            true,
+            (actualResource as Resource.Error).error != null
+        )
+    }
+
+    @Test
+    fun getGame_onValidGameResponse_verifyGameWithQueryEndpointAndResourceSuccessWithGameFromApi() =
+        runTest {
+            // Given
+            mockWebServer.enqueue(
+                MockResponse()
+                    .setResponseCode(200)
+                    .setBody(MockWebServerDataSource.validGameResponse)
+            )
+
+            // When
+            val gameId = MockWebServerDataSource.validGameId
+            val actualResource = repository.getGame(gameId)
+
+            // Then
+            val request = mockWebServer.takeRequest()
+            assertEquals(
+                "/game?id=$gameId",
+                request.path
+            )
+            assertEquals(
+                true,
+                actualResource is Resource.Success
+            )
+            assertEquals(
+                gameId,
+                (actualResource as Resource.Success).data.id
+            )
+        }
+
+    @Test
+    fun getGame_onErrorResponse404_verifyResourceError() = runTest {
+        // Given
+        mockWebServer.enqueue(
+            // This simulates a null body due to invalid endpoint(missing query) or game not found
+            MockResponse().setResponseCode(404)
+        )
+
+        // When
+        val actualResource = repository.getGame(MockWebServerDataSource.validGameId)
+
+        // Then
+        assertEquals(
+            Resource.Error<GameDetails>(),
+            actualResource
+        )
+    }
+
+    @Test
+    fun getGame_onInvalidGameResponse_verifyResourceErrorWithThrowable() = runTest {
+        // Given
+        mockWebServer.enqueue(
+            MockResponse().setBody(MockWebServerDataSource.invalidGameResponse)
+        )
+
+        // When
+        val actualResource = repository.getGame(MockWebServerDataSource.validGameId)
 
         // Then
         assertEquals(

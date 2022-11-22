@@ -101,4 +101,9 @@ dependencies {
 
     // mock web server (unit testing)
     testImplementation "com.squareup.okhttp3:mockwebserver:5.0.0-alpha.10"
+
+    // Room testing (instrumentation testing)
+    androidTestImplementation 'androidx.arch.core:core-testing:2.1.0' // for live data (optional)
+    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 }

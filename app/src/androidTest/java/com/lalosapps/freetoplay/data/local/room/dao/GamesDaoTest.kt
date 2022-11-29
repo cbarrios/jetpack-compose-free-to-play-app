@@ -4,6 +4,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.lalosapps.freetoplay.data.local.room.db.GamesDatabase
+import com.lalosapps.freetoplay.data.local.room.entity.GameDetailsEntity
 import com.lalosapps.freetoplay.data.local.room.entity.GameEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -163,6 +164,131 @@ class GamesDaoTest {
                 assertEquals(
                     true,
                     actualGames.isNotEmpty()
+                )
+            }
+
+            job.cancel()
+        }
+
+    @Test
+    fun saveGameDetails_and_getGameDetails_onEmptyCache_verifyInsertion() = runTest {
+        // Given
+        val game = GamesDaoDataSource.getGameDetailsEntity(false)
+        val expected = listOf(game)
+
+        // When
+        dao.saveGameDetails(game)
+        val actual = dao.getGameDetails(game.id)
+
+        // Then
+        assertEquals(
+            expected,
+            actual
+        )
+    }
+
+    @Test
+    fun saveGameDetails_and_getGameDetails_onPopulatedCache_verifyInsertedGameWithSameIdGetsReplaced() =
+        runTest {
+            // Given
+            val game = GamesDaoDataSource.getGameDetailsEntity(false)
+
+            // When (1)
+            dao.saveGameDetails(game)
+
+            // Then (1)
+            assertEquals(
+                false,
+                dao.getGameDetails(game.id).first().isFavorite
+            )
+
+            // When (2)
+            val updatedGame = game.copy(isFavorite = true)
+            dao.saveGameDetails(updatedGame)
+            val actualGame = dao.getGameDetails(game.id).first()
+
+            // Then (2)
+            assertEquals(
+                true,
+                actualGame.isFavorite
+            )
+            assertEquals(
+                game.copy(isFavorite = true),
+                actualGame
+            )
+        }
+
+    @Test
+    fun saveGameDetails_and_getGameDetailsFlow_onEmptyCache_verifyFlowEmitsNewInsertedGame() =
+        runTest {
+            // Given
+            val game = GamesDaoDataSource.getGameDetailsEntity(false)
+            val expected = listOf(game)
+
+            // When
+            dao.saveGameDetails(game)
+            val actual = dao.getGameDetailsFlow(game.id).first()
+
+            // Then
+            assertEquals(
+                expected,
+                actual
+            )
+        }
+
+    @Test
+    fun saveGameDetails_and_toggleFavoriteGameDetails_and_getGameDetailsFlow_onEmptyCache_verifyFlowEmitsNewInsertedGameWithFavoriteToggled() =
+        runTest {
+            // Given
+            val game = GamesDaoDataSource.getGameDetailsEntity(false)
+            val expected = game.copy(isFavorite = true)
+
+            // When
+            dao.saveGameDetails(game)
+            dao.toggleFavoriteGameDetails(game.id, !game.isFavorite)
+            val actual = dao.getGameDetailsFlow(game.id).first()
+
+            // Then
+            assertEquals(
+                expected,
+                actual.first()
+            )
+        }
+
+    @Test
+    fun getFavoritesFlow_onEmptyCacheInsertOneGameToggleFavoriteThenToggleAgain_verifyFavoritesListIncludesGameThenBecomesEmpty() =
+        runTest {
+            // Given
+            val game = GamesDaoDataSource.getGameDetailsEntity(false)
+            var actualFavorites = listOf<GameDetailsEntity>()
+
+            val job = launch(UnconfinedTestDispatcher()) {
+                // When (1)
+                dao.saveGameDetails(game)
+                dao.getFavoritesFlow().collect {
+                    actualFavorites = it
+                }
+                dao.toggleFavoriteGameDetails(
+                    actualFavorites.first().id,
+                    !actualFavorites.first().isFavorite
+                )
+
+                // Then (1)
+                assertEquals(
+                    game.copy(isFavorite = true),
+                    actualFavorites.first()
+                )
+
+                // When (2)
+                dao.toggleFavoriteGameDetails(
+                    actualFavorites.first().id,
+                    !actualFavorites.first().isFavorite
+                )
+
+                // Then (2)
+                assertEquals(
+                    emptyList<GameDetailsEntity>(),
+                    actualFavorites
                 )
             }
 

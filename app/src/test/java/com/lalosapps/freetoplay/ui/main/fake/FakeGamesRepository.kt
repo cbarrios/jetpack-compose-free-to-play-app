@@ -13,6 +13,7 @@ class FakeGamesRepository : GamesRepository {
     var throwsException = false
     val throwable = Throwable("Suspend fun failed...")
     var errorResponse = false
+    var emptyCache = false
 
     override suspend fun getAllGames(source: DataSource): Resource<List<Game>> {
         if (throwsException) return Resource.Error(error = throwable)
@@ -23,8 +24,10 @@ class FakeGamesRepository : GamesRepository {
                 return Resource.Error(data = emptyList())
             }
             delay(3000)
+            FakeGamesRepositoryDataSource.populateGameList(false)
             return Resource.Success(FakeGamesRepositoryDataSource.gameList)
         } else {
+            FakeGamesRepositoryDataSource.populateGameList(startEmpty = emptyCache)
             return Resource.Success(FakeGamesRepositoryDataSource.gameList)
         }
     }

@@ -22,6 +22,18 @@ object FakeGamesRepositoryDataSource {
     )
 
     var gameList = listOf(game)
+        set(value) {
+            allGamesStream.value = value
+            field = value
+        }
+
+    fun populateGameList(startEmpty: Boolean = false) {
+        gameList = if (startEmpty) {
+            emptyList()
+        } else {
+            listOf(game)
+        }
+    }
 
     var gameDetails = GameDetails(
         description = "Turn-based card game with focus on control decks.",

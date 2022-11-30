@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.*
 
 object FakeGamesRepositoryDataSource {
 
-    private val game = Game(
+    val pcGame = Game(
         developer = "XYZ Devs",
         freeToGameProfileUrl = "Profile Url 1",
         gameUrl = "Game Url 1",
@@ -21,17 +21,39 @@ object FakeGamesRepositoryDataSource {
         isFavorite = false
     )
 
-    var gameList = listOf(game)
+    val webGame = Game(
+        developer = "XYZ Devs",
+        freeToGameProfileUrl = "Profile Url 2",
+        gameUrl = "Game Url 2",
+        genre = "Card Game",
+        id = 2,
+        platform = "Web",
+        publisher = "XYZ Inc",
+        releaseDate = "2022-11-29",
+        shortDescription = "Turn-based card game with focus on fast decks.",
+        thumbnail = "Thumbnail 2",
+        title = "Aqua World",
+        isFavorite = false
+    )
+
+    var gameList = listOf(pcGame)
         set(value) {
             allGamesStream.value = value
             field = value
         }
 
-    fun populateGameList(startEmpty: Boolean = false) {
+    fun populateGameList(
+        startEmpty: Boolean = false,
+        startWithTwo: Boolean = false
+    ) {
         gameList = if (startEmpty) {
             emptyList()
         } else {
-            listOf(game)
+            if (startWithTwo) {
+                listOf(pcGame, webGame)
+            } else {
+                listOf(pcGame)
+            }
         }
     }
 

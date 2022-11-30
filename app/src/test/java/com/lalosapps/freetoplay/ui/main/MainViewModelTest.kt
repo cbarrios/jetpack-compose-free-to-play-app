@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -352,6 +353,162 @@ class MainViewModelTest {
             // Then (2)
             assertEquals(
                 initGames,
+                setGames
+            )
+        }
+
+    @Test
+    fun init_onPopulatedCacheWithTwoGamesAndNoErrors_setAllGames_verifyGamesListSameAsPreviouslySetOnInitBlock() =
+        runTest {
+            // Given
+            repository = FakeGamesRepository().apply { startWithTwoGames = true }
+            getGamesFlowUseCase = GetGamesFlowUseCase(repository)
+            getFavoritesFlowUseCase = GetFavoritesFlowUseCase(repository)
+            viewModel = MainViewModel(repository, getGamesFlowUseCase, getFavoritesFlowUseCase)
+
+            // When (1) (init block executes)
+            val initGames = viewModel.gamesList.value
+
+            // Then (1)
+            assertEquals(
+                FakeGamesRepositoryDataSource.gameList,
+                initGames
+            )
+            assertEquals(
+                2,
+                initGames.size
+            )
+
+            // When (2)
+            viewModel.setAllGames()
+            val setGames = viewModel.gamesList.value
+
+            // Then (2)
+            assertEquals(
+                2,
+                initGames.size
+            )
+            assertEquals(
+                initGames,
+                setGames
+            )
+        }
+
+    @Test
+    fun init_onPopulatedCacheWithTwoGamesAndNoErrors_setPcGames_verifyGamesListOnlyIncludesTheOneForWindowsPlatform() =
+        runTest {
+            // Given
+            repository = FakeGamesRepository().apply { startWithTwoGames = true }
+            getGamesFlowUseCase = GetGamesFlowUseCase(repository)
+            getFavoritesFlowUseCase = GetFavoritesFlowUseCase(repository)
+            viewModel = MainViewModel(repository, getGamesFlowUseCase, getFavoritesFlowUseCase)
+
+            // When (1) (init block executes)
+            val initGames = viewModel.gamesList.value
+
+            // Then (1)
+            assertEquals(
+                FakeGamesRepositoryDataSource.gameList,
+                initGames
+            )
+            assertEquals(
+                2,
+                initGames.size
+            )
+
+            // When (2)
+            viewModel.setPcGames()
+            val setGames = viewModel.gamesList.value
+
+            // Then (2)
+            assertNotEquals(
+                initGames,
+                setGames
+            )
+            assertEquals(
+                1,
+                setGames.size
+            )
+            assertEquals(
+                FakeGamesRepositoryDataSource.pcGame,
+                setGames.first()
+            )
+        }
+
+    @Test
+    fun init_onPopulatedCacheWithTwoGamesAndNoErrors_setWebGames_verifyGamesListOnlyIncludesTheOneForWebPlatform() =
+        runTest {
+            // Given
+            repository = FakeGamesRepository().apply { startWithTwoGames = true }
+            getGamesFlowUseCase = GetGamesFlowUseCase(repository)
+            getFavoritesFlowUseCase = GetFavoritesFlowUseCase(repository)
+            viewModel = MainViewModel(repository, getGamesFlowUseCase, getFavoritesFlowUseCase)
+
+            // When (1) (init block executes)
+            val initGames = viewModel.gamesList.value
+
+            // Then (1)
+            assertEquals(
+                FakeGamesRepositoryDataSource.gameList,
+                initGames
+            )
+            assertEquals(
+                2,
+                initGames.size
+            )
+
+            // When (2)
+            viewModel.setWebGames()
+            val setGames = viewModel.gamesList.value
+
+            // Then (2)
+            assertNotEquals(
+                initGames,
+                setGames
+            )
+            assertEquals(
+                1,
+                setGames.size
+            )
+            assertEquals(
+                FakeGamesRepositoryDataSource.webGame,
+                setGames.first()
+            )
+        }
+
+    @Test
+    fun init_onPopulatedCacheWithTwoGamesNotSortedCorrectlyAndNoErrors_setLatestGames_verifyGamesListSortedByDescendingCorrectly() =
+        runTest {
+            // Given
+            repository = FakeGamesRepository().apply { startWithTwoGames = true }
+            getGamesFlowUseCase = GetGamesFlowUseCase(repository)
+            getFavoritesFlowUseCase = GetFavoritesFlowUseCase(repository)
+            viewModel = MainViewModel(repository, getGamesFlowUseCase, getFavoritesFlowUseCase)
+
+            // When (1) (init block executes)
+            val initGames = viewModel.gamesList.value
+
+            // Then (1)
+            assertEquals(
+                2,
+                initGames.size
+            )
+            assertEquals(
+                FakeGamesRepositoryDataSource.gameList,
+                initGames
+            )
+
+            // When (2)
+            viewModel.setLatestGames()
+            val setGames = viewModel.gamesList.value
+
+            // Then (2)
+            assertNotEquals(
+                initGames,
+                setGames
+            )
+            assertEquals(
+                initGames.sortedByDescending { it.releaseDate },
                 setGames
             )
         }

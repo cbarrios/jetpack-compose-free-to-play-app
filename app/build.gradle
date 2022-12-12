@@ -106,4 +106,8 @@ dependencies {
     androidTestImplementation 'androidx.arch.core:core-testing:2.1.0' // for live data (optional)
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+
+    // Navigation UI Testing
+    androidTestImplementation 'androidx.navigation:navigation-testing:2.5.3'
+
 }

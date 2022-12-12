@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -43,10 +44,10 @@ fun FreeToPlayApp(
     onDrawerAllGamesClick: () -> Unit,
     onDrawerPcGamesClick: () -> Unit,
     onDrawerWebGamesClick: () -> Unit,
-    onDrawerLatestGamesClick: () -> Unit
+    onDrawerLatestGamesClick: () -> Unit,
+    navController: NavHostController = rememberNavController(),
 ) {
     val scaffoldState = rememberScaffoldState()
-    val navController = rememberNavController()
     val scope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
 

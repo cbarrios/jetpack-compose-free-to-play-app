@@ -6,4 +6,7 @@
     <string name="latest_games">Latest Games</string>
     <string name="my_games">My Games</string>
     <string name="nothing_yet">Nothing yet.</string>
+    <string name="search_button">Search Button</string>
+    <string name="menu_button">Menu Button</string>
+    <string name="back_button">Back Button</string>
 </resources>

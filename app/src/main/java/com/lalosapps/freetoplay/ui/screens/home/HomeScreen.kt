@@ -13,7 +13,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -99,7 +101,7 @@ fun GamesScreen(
             IconButton(onClick = onOpenDrawer) {
                 Icon(
                     imageVector = Icons.Default.Menu,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.menu_button),
                     tint = MaterialTheme.colors.onBackground
                 )
             }
@@ -113,7 +115,7 @@ fun GamesScreen(
             IconButton(onClick = onSearch) {
                 Icon(
                     imageVector = Icons.Default.Search,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.search_button),
                     tint = MaterialTheme.colors.onBackground
                 )
             }
@@ -125,7 +127,8 @@ fun GamesScreen(
             val randomUrls = remember(games) { games.getRandomUrls() }
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                state = gridState
+                state = gridState,
+                modifier = Modifier.testTag("Games")
             ) {
                 header {
                     CarouselView(

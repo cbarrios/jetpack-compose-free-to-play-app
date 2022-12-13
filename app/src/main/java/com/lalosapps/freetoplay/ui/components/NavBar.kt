@@ -10,8 +10,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.lalosapps.freetoplay.R
 
 @Composable
 fun GameDetailsNavBar(
@@ -29,7 +31,7 @@ fun GameDetailsNavBar(
         IconButton(onClick = onBackPress) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.back_button),
                 tint = MaterialTheme.colors.onBackground
             )
         }

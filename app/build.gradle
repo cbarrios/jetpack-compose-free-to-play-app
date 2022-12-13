@@ -16,7 +16,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.lalosapps.freetoplay.ui.main.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary true
         }
@@ -104,10 +104,9 @@ dependencies {
 
     // Room testing (instrumentation testing)
     androidTestImplementation 'androidx.arch.core:core-testing:2.1.0' // for live data (optional)
-    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 
     // Navigation UI Testing
     androidTestImplementation 'androidx.navigation:navigation-testing:2.5.3'
-
+    androidTestImplementation 'com.google.dagger:hilt-android-testing:2.44'
+    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.44'
 }

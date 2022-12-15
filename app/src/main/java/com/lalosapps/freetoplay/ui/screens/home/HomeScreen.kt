@@ -106,7 +106,9 @@ fun GamesScreen(
                 )
             }
             Text(
-                modifier = Modifier.widthIn(max = 150.dp),
+                modifier = Modifier
+                    .widthIn(max = 150.dp)
+                    .testTag("Bar Title"),
                 text = barTitle,
                 style = MaterialTheme.typography.h6,
                 maxLines = 1,

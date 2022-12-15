@@ -38,13 +38,14 @@ class FreeToPlayAppNavigationTest {
         composeTestRule.activity.setContent {
             navController = TestNavHostController(LocalContext.current)
             navController.navigatorProvider.addNavigator(ComposeNavigator())
+            val viewModel = composeTestRule.activity.viewModels<MainViewModel>().value
             FreeToPlayApp(
-                uiState = composeTestRule.activity.viewModels<MainViewModel>().value.uiState.collectAsState().value,
-                gamesList = composeTestRule.activity.viewModels<MainViewModel>().value.gamesList.collectAsState().value,
-                onDrawerAllGamesClick = { },
-                onDrawerPcGamesClick = { },
-                onDrawerWebGamesClick = { },
-                onDrawerLatestGamesClick = { },
+                uiState = viewModel.uiState.collectAsState().value,
+                gamesList = viewModel.gamesList.collectAsState().value,
+                onDrawerAllGamesClick = { viewModel.setAllGames() },
+                onDrawerPcGamesClick = { viewModel.setPcGames() },
+                onDrawerWebGamesClick = { viewModel.setWebGames() },
+                onDrawerLatestGamesClick = { viewModel.setLatestGames() },
                 navController = navController
             )
         }
@@ -122,7 +123,7 @@ class FreeToPlayAppNavigationTest {
         composeTestRule.onNode(hasTestTag("Games"))
             .onChildren()
             .filter(hasClickAction())
-            .assertCountEquals(1)
+            .assertCountEquals(FakeFreeToPlayAppDataSource.allGamesCount)
             .onFirst()
             .assert(hasText(FakeFreeToPlayAppDataSource.games.first().title))
             .performClick()
@@ -137,6 +138,116 @@ class FreeToPlayAppNavigationTest {
             .performClick()
         performNavigateUp()
         navController.assertCurrentRouteName(Screen.HOME)
+    }
+
+    @Test
+    fun freeToPlayNavHost_clickMenuButton_clickOnAllGames_verifyInitialScreenContentsRemainUnchanged() {
+        checkInitialScreen()
+
+        val menuButton = composeTestRule.activity.getString(R.string.menu_button)
+        composeTestRule
+            .onNodeWithContentDescription(menuButton)
+            .performClick()
+        composeTestRule
+            .onNodeWithText(composeTestRule.activity.getString(R.string.all_games))
+            .performClick()
+
+        // Verify
+        checkInitialScreen()
+    }
+
+    @Test
+    fun freeToPlayNavHost_clickMenuButton_clickOnPcGames_verifyBarTitleChangesAndGamesListIncludesThoseForWindowsOnly() {
+        checkInitialScreen()
+
+        val menuButton = composeTestRule.activity.getString(R.string.menu_button)
+        composeTestRule
+            .onNodeWithContentDescription(menuButton)
+            .performClick()
+        composeTestRule
+            .onNodeWithText(composeTestRule.activity.getString(R.string.pc_games))
+            .performClick()
+
+        // Verify
+        composeTestRule
+            .onNodeWithTag("Bar Title")
+            .assert(hasText(composeTestRule.activity.getString(R.string.pc_games)))
+        composeTestRule.onNode(hasTestTag("Games"))
+            .onChildren()
+            .filter(hasClickAction())
+            .assertCountEquals(FakeFreeToPlayAppDataSource.pcGamesCount)
+            .onFirst()
+            .assert(hasText(FakeFreeToPlayAppDataSource.games.first().title))
+    }
+
+    @Test
+    fun freeToPlayNavHost_clickMenuButton_clickOnWebGames_verifyBarTitleChangesAndGamesListIncludesThoseForWebBrowserOnly() {
+        checkInitialScreen()
+
+        val menuButton = composeTestRule.activity.getString(R.string.menu_button)
+        composeTestRule
+            .onNodeWithContentDescription(menuButton)
+            .performClick()
+        composeTestRule
+            .onNodeWithText(composeTestRule.activity.getString(R.string.web_games))
+            .performClick()
+
+        // Verify
+        composeTestRule
+            .onNodeWithTag("Bar Title")
+            .assert(hasText(composeTestRule.activity.getString(R.string.web_games)))
+        composeTestRule.onNode(hasTestTag("Games"))
+            .onChildren()
+            .filter(hasClickAction())
+            .assertCountEquals(FakeFreeToPlayAppDataSource.webGamesCount)
+            .onFirst()
+            .assert(hasText(FakeFreeToPlayAppDataSource.games.last().title))
+    }
+
+    @Test
+    fun freeToPlayNavHost_clickMenuButton_clickOnLatestGames_verifyBarTitleChangesAndGamesListIsSortedByReleaseDateDescending() {
+        checkInitialScreen()
+
+        val menuButton = composeTestRule.activity.getString(R.string.menu_button)
+        composeTestRule
+            .onNodeWithContentDescription(menuButton)
+            .performClick()
+        composeTestRule
+            .onNodeWithText(composeTestRule.activity.getString(R.string.latest_games))
+            .performClick()
+
+        // Verify
+        composeTestRule
+            .onNodeWithTag("Bar Title")
+            .assert(hasText(composeTestRule.activity.getString(R.string.latest_games)))
+        composeTestRule.onNode(hasTestTag("Games"))
+            .onChildren()
+            .filter(hasClickAction())
+            .assertCountEquals(FakeFreeToPlayAppDataSource.allGamesCount)
+            .onFirst()
+            .assert(hasText(FakeFreeToPlayAppDataSource.games.last().title))
+        composeTestRule.onNode(hasTestTag("Games"))
+            .onChildren()
+            .filter(hasClickAction())
+            .onLast()
+            .assert(hasText(FakeFreeToPlayAppDataSource.games.first().title))
+    }
+
+    private fun checkInitialScreen() {
+        composeTestRule
+            .onNodeWithTag("Bar Title")
+            .assert(hasText(composeTestRule.activity.getString(R.string.app_name)))
+        composeTestRule.onNode(hasTestTag("Games"))
+            .onChildren()
+            .filter(hasClickAction())
+            .assertCountEquals(FakeFreeToPlayAppDataSource.allGamesCount)
+            .onFirst()
+            .assert(hasText(FakeFreeToPlayAppDataSource.games.first().title))
+        composeTestRule.onNode(hasTestTag("Games"))
+            .onChildren()
+            .filter(hasClickAction())
+            .onLast()
+            .assert(hasText(FakeFreeToPlayAppDataSource.games.last().title))
     }
 
     private fun performNavigateUp() {

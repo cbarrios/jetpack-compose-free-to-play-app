@@ -38,6 +38,29 @@ object FakeFreeToPlayAppDataSource {
             thumbnail = "Thumbnail 1",
             title = "Titans",
             isFavorite = false
+        ),
+        Game(
+            developer = "XYZ Devs",
+            freeToGameProfileUrl = "Profile Url 2",
+            gameUrl = "Game Url 2",
+            genre = "Card Game",
+            id = 2,
+            platform = "Web",
+            publisher = "XYZ Inc",
+            releaseDate = "2022-12-15",
+            shortDescription = "Turn-based card game with heavy focus on control decks.",
+            thumbnail = "Thumbnail 2",
+            title = "Titans 2",
+            isFavorite = false
         )
     )
+
+    val allGamesCount: Int
+        get() = games.size
+
+    val pcGamesCount: Int
+        get() = games.filter { it.platform.contains("windows", ignoreCase = true) }.size
+
+    val webGamesCount: Int
+        get() = games.filter { !it.platform.contains("windows", ignoreCase = true) }.size
 }

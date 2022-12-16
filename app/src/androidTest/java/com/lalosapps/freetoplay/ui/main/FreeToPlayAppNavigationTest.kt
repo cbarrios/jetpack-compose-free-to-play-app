@@ -258,9 +258,4 @@ class FreeToPlayAppNavigationTest {
             .performClick()
     }
 
-    // Optional to identify elements on the screen while tests are running (hybrid testing)
-    private fun waitOnePlusSeconds(delayMillis: Long = 0L) {
-        AsyncTimer.start(delayMillis)
-        composeTestRule.waitUntil(delayMillis + 1000L) { AsyncTimer.expired }
-    }
 }

@@ -9,4 +9,8 @@
     <string name="search_button">Search Button</string>
     <string name="menu_button">Menu Button</string>
     <string name="back_button">Back Button</string>
+    <string name="sorry_no_games_available">Sorry, no games available.</string>
+    <string name="could_not_fetch_games">Couldn\'t fetch games.</string>
+    <string name="ic_connection_error">Connection error</string>
+    <string name="scroll_up_content_description">Scroll up to the first list item.</string>
 </resources>

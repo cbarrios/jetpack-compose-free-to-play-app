@@ -13,9 +13,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -52,18 +55,18 @@ fun HomeScreen(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_connection_error),
-                        contentDescription = null
+                        contentDescription = stringResource(R.string.ic_connection_error)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "${uiState.error ?: "Couldn't fetch games."}",
+                        text = "${uiState.error ?: stringResource(R.string.could_not_fetch_games)}",
                         textAlign = TextAlign.Center
                     )
                 }
             }
             is Resource.Success -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = "Sorry, no games available.")
+                    Text(text = stringResource(R.string.sorry_no_games_available))
                 }
             }
             else -> Unit
@@ -160,9 +163,15 @@ fun GamesScreen(
                     gridState.firstVisibleItemIndex > 0
                 }
             }
+            val context = LocalContext.current
             androidx.compose.animation.AnimatedVisibility(
                 visible = showUpButton,
-                modifier = Modifier.align(Alignment.BottomCenter)
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .semantics {
+                        contentDescription =
+                            context.getString(R.string.scroll_up_content_description)
+                    }
             ) {
                 IconButton(
                     onClick = { scope.launch { gridState.scrollToItem(0) } }

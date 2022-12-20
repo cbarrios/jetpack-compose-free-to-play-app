@@ -13,4 +13,5 @@
     <string name="could_not_fetch_games">Couldn\'t fetch games.</string>
     <string name="ic_connection_error">Connection error</string>
     <string name="scroll_up_content_description">Scroll up to the first list item.</string>
+    <string name="filter_games_content_description">Filter games by genres.</string>
 </resources>

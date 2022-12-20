@@ -17,8 +17,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lalosapps.freetoplay.ui.components.GameDetailsNavBar
 import com.lalosapps.freetoplay.ui.components.SearchDetails
 import com.lalosapps.freetoplay.R
+import com.lalosapps.freetoplay.domain.model.Game
 import com.lalosapps.freetoplay.ui.components.AnimatedChipRow
 import com.lalosapps.freetoplay.ui.components.Chip
+import com.lalosapps.freetoplay.ui.screens.base.ChipData
 
 @ExperimentalLifecycleComposeApi
 @Composable
@@ -29,6 +31,27 @@ fun FavoritesScreen(
 ) {
     val favorites = viewModel.favGames.collectAsStateWithLifecycle().value
     val genres = viewModel.favGenres.collectAsStateWithLifecycle().value
+    FavoritesScreen(
+        favorites = favorites,
+        genres = genres,
+        showFilter = viewModel.showFilter,
+        onFilterToggle = viewModel::onFilterToggle,
+        onFilterByGenre = viewModel::filterByGenre,
+        onBackPress = onBackPress,
+        onItemClick = onItemClick
+    )
+}
+
+@Composable
+fun FavoritesScreen(
+    favorites: List<Game>,
+    genres: List<ChipData>,
+    showFilter: Boolean,
+    onFilterToggle: (Boolean) -> Unit,
+    onFilterByGenre: (String) -> Unit,
+    onBackPress: () -> Unit,
+    onItemClick: (Int) -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -62,13 +85,13 @@ fun FavoritesScreen(
             trailingIcon = if (favorites.isNotEmpty()) {
                 {
                     IconToggleButton(
-                        checked = viewModel.showFilter,
-                        onCheckedChange = viewModel::onFilterToggle
+                        checked = showFilter,
+                        onCheckedChange = onFilterToggle
                     ) {
                         Icon(
                             imageVector = Icons.Default.FilterList,
-                            contentDescription = null,
-                            tint = if (viewModel.showFilter) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground
+                            contentDescription = stringResource(R.string.filter_games_content_description),
+                            tint = if (showFilter) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground
                         )
                     }
                 }
@@ -78,9 +101,9 @@ fun FavoritesScreen(
         )
         if (favorites.isNotEmpty()) {
             AnimatedChipRow(
-                visible = viewModel.showFilter,
+                visible = showFilter,
                 data = genres,
-                onChipClick = viewModel::filterByGenre
+                onChipClick = onFilterByGenre
             )
             SearchDetails(
                 games = favorites,

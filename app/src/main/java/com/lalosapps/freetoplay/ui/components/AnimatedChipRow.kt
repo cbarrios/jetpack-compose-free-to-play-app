@@ -9,6 +9,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.lalosapps.freetoplay.ui.screens.base.ChipData
 
@@ -21,7 +22,9 @@ fun AnimatedChipRow(
     Column {
         AnimatedVisibility(visible = visible) {
             LazyRow(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("GenresHorizontalList"),
                 contentPadding = PaddingValues(bottom = 8.dp, start = 8.dp, end = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {

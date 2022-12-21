@@ -163,7 +163,8 @@ fun GameDetails(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .requiredHeight(250.dp),
+                        .requiredHeight(250.dp)
+                        .testTag("GameDetailsImage"),
                     onLoading = {
                         Box(
                             modifier = Modifier.fillMaxSize(),
@@ -192,7 +193,8 @@ fun GameDetails(
                     modifier = Modifier
                         .fillMaxWidth()
                         .requiredHeight(250.dp)
-                        .align(Alignment.CenterHorizontally),
+                        .align(Alignment.CenterHorizontally)
+                        .testTag("GameDetailsCarousel"),
                     shape = MaterialTheme.shapes.medium,
                     crossFade = 1000
                 )
@@ -251,7 +253,7 @@ fun GameDetails(
             gameDetails.minSystemRequirements?.let {
                 if (!it.isNull) {
                     Text(
-                        text = "Minimum System Requirements",
+                        text = stringResource(R.string.min_sys_reqs),
                         style = MaterialTheme.typography.subtitle1,
                         color = MaterialTheme.colors.onBackground,
                         modifier = Modifier.padding(16.dp)
@@ -264,7 +266,9 @@ fun GameDetails(
                     Text(
                         text = gameDetails.minSystemRequirements.processor ?: "?",
                         style = MaterialTheme.typography.caption,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .testTag("MinSysReqProcessor")
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -275,7 +279,9 @@ fun GameDetails(
                     Text(
                         text = gameDetails.minSystemRequirements.memory ?: "?",
                         style = MaterialTheme.typography.caption,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .testTag("MinSysReqMemory")
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -286,7 +292,9 @@ fun GameDetails(
                     Text(
                         text = gameDetails.minSystemRequirements.storage ?: "?",
                         style = MaterialTheme.typography.caption,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .testTag("MinSysReqStorage")
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -297,7 +305,9 @@ fun GameDetails(
                     Text(
                         text = gameDetails.minSystemRequirements.graphics ?: "?",
                         style = MaterialTheme.typography.caption,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .testTag("MinSysReqGraphics")
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -308,7 +318,9 @@ fun GameDetails(
                     Text(
                         text = gameDetails.minSystemRequirements.os ?: "?",
                         style = MaterialTheme.typography.caption,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .testTag("MinSysReqOS")
                     )
                 }
             }
@@ -326,6 +338,7 @@ fun GameDetails(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .clickable { onGameUrlClick(gameDetails.gameUrl) }
+                    .testTag("WebsiteLink")
             )
             Text(
                 text = "Copyright",

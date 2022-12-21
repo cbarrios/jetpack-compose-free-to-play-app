@@ -15,4 +15,7 @@
     <string name="scroll_up_content_description">Scroll up to the first list item.</string>
     <string name="filter_games_content_description">Filter games by genres.</string>
     <string name="toggle_favorite_content_description">Toggle favorite game.</string>
+    <string name="min_sys_reqs">Minimum System Requirements</string>
+    <string name="show_less">(Show less)</string>
+    <string name="show_more">(Show More)</string>
 </resources>

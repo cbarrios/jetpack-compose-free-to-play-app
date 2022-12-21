@@ -7,6 +7,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -14,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
+import com.lalosapps.freetoplay.R
 
 @Composable
 fun ExpandableText(
@@ -44,6 +47,7 @@ fun ExpandableText(
     var finalText by remember { mutableStateOf(buildAnnotatedString { append(text) }) }
 
     val textLayoutResult = textLayoutResultState.value
+    val context = LocalContext.current
 
     LaunchedEffect(textLayoutResult) {
         if (textLayoutResult == null) return@LaunchedEffect
@@ -58,13 +62,13 @@ fun ExpandableText(
                             textDecoration = TextDecoration.Underline
                         )
                     ) {
-                        append("(Show less)")
+                        append(context.getString(R.string.show_less))
                     }
                 }
             }
             textLayoutResult.hasVisualOverflow -> {
                 val lastCharIndex = textLayoutResult.getLineEnd(lineIndex = visibleLines - 1)
-                val showMoreString = "(Show More)"
+                val showMoreString = context.getString(R.string.show_more)
                 val adjustedText = text
                     .substring(startIndex = 0, endIndex = lastCharIndex)
                     .dropLast(showMoreString.length)
@@ -93,6 +97,7 @@ fun ExpandableText(
         maxLines = if (isExpanded) Int.MAX_VALUE else visibleLines,
         onTextLayout = { textLayoutResultState.value = it },
         modifier = modifier
+            .testTag("ExpandableText")
             .clickable(enabled = isClickable) { isExpanded = !isExpanded }
             .animateContentSize(),
         fontSize = fontSize,

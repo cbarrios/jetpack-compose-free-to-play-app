@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -37,7 +38,12 @@ fun GameDetailsNavBar(
         }
         Spacer(modifier = Modifier.width(16.dp))
         Text(
-            modifier = if (badge == null && trailingIcon == null) Modifier else Modifier.widthIn(max = 150.dp),
+            modifier = if (badge == null && trailingIcon == null)
+                Modifier.testTag("GameDetailsNavBarTitle")
+            else
+                Modifier
+                    .widthIn(max = 150.dp)
+                    .testTag("GameDetailsNavBarTitle"),
             text = title,
             style = MaterialTheme.typography.h6,
             maxLines = 1,

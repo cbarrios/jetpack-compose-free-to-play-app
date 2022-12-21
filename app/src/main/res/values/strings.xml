@@ -14,4 +14,5 @@
     <string name="ic_connection_error">Connection error</string>
     <string name="scroll_up_content_description">Scroll up to the first list item.</string>
     <string name="filter_games_content_description">Filter games by genres.</string>
+    <string name="toggle_favorite_content_description">Toggle favorite game.</string>
 </resources>

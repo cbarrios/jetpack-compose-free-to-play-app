@@ -17,7 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -28,6 +31,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.lalosapps.freetoplay.core.util.Resource
 import com.lalosapps.freetoplay.domain.model.GameDetails
 import com.lalosapps.freetoplay.ui.components.*
+import com.lalosapps.freetoplay.ui.screens.base.iconName
 
 @ExperimentalPagerApi
 @ExperimentalLifecycleComposeApi
@@ -37,7 +41,24 @@ fun GameDetailsScreen(
     onGameUrlClick: (String) -> Unit,
     viewModel: GameDetailsViewModel = hiltViewModel()
 ) {
-    when (val uiState = viewModel.game.collectAsStateWithLifecycle().value) {
+    val uiState = viewModel.game.collectAsStateWithLifecycle().value
+    GameDetailsScreen(
+        uiState = uiState,
+        onToggleFavorite = viewModel::toggleFavorite,
+        onBackPress = onBackPress,
+        onGameUrlClick = onGameUrlClick
+    )
+}
+
+@ExperimentalPagerApi
+@Composable
+fun GameDetailsScreen(
+    uiState: Resource<GameDetails>,
+    onToggleFavorite: (Int, Boolean) -> Unit,
+    onBackPress: () -> Unit,
+    onGameUrlClick: (String) -> Unit
+) {
+    when (uiState) {
         Resource.Loading -> LoadingScreen()
         is Resource.Error -> ErrorScreen(
             uiState.error.toString(),
@@ -53,15 +74,18 @@ fun GameDetailsScreen(
                         backgroundColor = MaterialTheme.colors.background,
                         contentColor = MaterialTheme.colors.primary,
                         onClick = {
-                            viewModel.toggleFavorite(
+                            onToggleFavorite(
                                 uiState.data.id,
                                 uiState.data.isFavorite
                             )
                         }
                     ) {
+                        val icon =
+                            if (uiState.data.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder
                         Icon(
-                            imageVector = if (uiState.data.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = null
+                            imageVector = icon,
+                            contentDescription = stringResource(R.string.toggle_favorite_content_description),
+                            modifier = Modifier.semantics { iconName = icon.name }
                         )
                     }
                 }
@@ -77,11 +101,12 @@ fun GameDetailsScreen(
     }
 }
 
-
 @Composable
 fun LoadingScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(
+            modifier = Modifier.testTag("GameDetailsScreenLoadingProgress")
+        )
     }
 }
 
@@ -104,7 +129,7 @@ fun ErrorScreen(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_connection_error),
-                contentDescription = null
+                contentDescription = stringResource(id = R.string.ic_connection_error)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = message, textAlign = TextAlign.Center)
@@ -129,6 +154,7 @@ fun GameDetails(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
+                .testTag("GameDetailsContainer")
         ) {
             if (gameDetails.screenshots.isEmpty()) {
                 NetworkImage(

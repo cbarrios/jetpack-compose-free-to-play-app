@@ -62,6 +62,10 @@ object FakeSearchScreenDataSource {
 
     val allGenres = manyGames.getAllGenres()
 
+    val strategyGames = manyGames.filter { it.genre == "Strategy" }
+    val cardGames = manyGames.filter { it.genre == "Card Game" }
+    val sportsGames = manyGames.filter { it.genre == "Sports" }
+
     val emptyGames = emptyList<Game>()
 
     const val topBarTitle = "Free To Play"

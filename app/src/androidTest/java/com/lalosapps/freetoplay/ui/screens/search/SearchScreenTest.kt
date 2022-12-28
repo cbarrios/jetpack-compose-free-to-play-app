@@ -152,6 +152,10 @@ class SearchScreenTest {
             )
         }
 
+        composeTestRule
+            .onNodeWithText(games.size.toString())
+            .assertIsDisplayed()
+
         val list = composeTestRule.onNodeWithTag("GamesVerticalList")
 
         list.assertIsDisplayed()
@@ -198,5 +202,334 @@ class SearchScreenTest {
             .onChildren()
             .filter(hasClickAction())
             .assertCountEquals(games.size)
+    }
+
+    @Test
+    fun searchScreen_onManyGames_performSearchWithNoResults_thenClickOnClearSearchIcon_verifyGameCounterIsZeroAndNothingYetTextShownThenAfterClearingGamesAreShown() {
+        val games = FakeSearchScreenDataSource.manyGames
+        composeTestRule.setContent {
+            SearchScreen(
+                games = games,
+                barTitle = FakeSearchScreenDataSource.topBarTitle,
+                onBackPress = { },
+                onItemClick = { },
+                viewModel = viewModel
+            )
+        }
+
+        composeTestRule
+            .onNodeWithTag("SearchBar")
+            .performTextInput("zzz")
+
+        composeTestRule
+            .onNodeWithTag("SearchBar")
+            .performImeAction()
+
+        composeTestRule
+            .onNodeWithText("0")
+            .assertIsDisplayed()
+
+        val text = composeTestRule.activity.getString(R.string.nothing_yet)
+        composeTestRule
+            .onNodeWithText(text)
+            .assertIsDisplayed()
+
+        val clearButtonContDesc = composeTestRule.activity.getString(R.string.clear_search_query)
+        composeTestRule
+            .onNodeWithContentDescription(clearButtonContDesc)
+            .performClick()
+
+        composeTestRule
+            .onNodeWithTag("GamesVerticalList")
+            .assertIsDisplayed()
+
+        composeTestRule
+            .onNodeWithText(games.size.toString())
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun searchScreen_onManyGames_performFilterByCardGame_thenClickOnFilterIconAgain_verifyOnlyCardGamesShownThenAllGamesAreShownAgain() {
+        val games = FakeSearchScreenDataSource.manyGames
+        composeTestRule.setContent {
+            SearchScreen(
+                games = games,
+                barTitle = FakeSearchScreenDataSource.topBarTitle,
+                onBackPress = { },
+                onItemClick = { },
+                viewModel = viewModel
+            )
+        }
+
+        val filterIconContDesc =
+            composeTestRule.activity.getString(R.string.filter_games_content_description)
+        composeTestRule
+            .onNodeWithContentDescription(filterIconContDesc)
+            .performClick()
+
+        composeTestRule
+            .onNodeWithTag("GenresHorizontalList")
+            .onChildren()
+            .filter(hasClickAction())
+            .filterToOne(hasText("Card Game"))
+            .performClick()
+
+        composeTestRule
+            .onNodeWithTag("GamesVerticalList")
+            .assertIsDisplayed()
+            .onChildren()
+            .filter(hasClickAction())
+            .assertCountEquals(FakeSearchScreenDataSource.cardGames.size)
+
+        composeTestRule
+            .onNodeWithText(FakeSearchScreenDataSource.cardGames.size.toString())
+            .assertIsDisplayed()
+
+        composeTestRule
+            .onNodeWithContentDescription(filterIconContDesc)
+            .performClick()
+
+        composeTestRule
+            .onNodeWithText(games.size.toString())
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun searchScreen_onManyGames_performFilterByCardGame_thenSearchForTitans2_verifyOnlyTheGameWithTitleTitans2IsShown() {
+        val games = FakeSearchScreenDataSource.manyGames
+        composeTestRule.setContent {
+            SearchScreen(
+                games = games,
+                barTitle = FakeSearchScreenDataSource.topBarTitle,
+                onBackPress = { },
+                onItemClick = { },
+                viewModel = viewModel
+            )
+        }
+
+        val filterIconContDesc =
+            composeTestRule.activity.getString(R.string.filter_games_content_description)
+        composeTestRule
+            .onNodeWithContentDescription(filterIconContDesc)
+            .performClick()
+
+        composeTestRule
+            .onNodeWithTag("GenresHorizontalList")
+            .onChildren()
+            .filter(hasClickAction())
+            .filterToOne(hasText("Card Game"))
+            .performClick()
+
+        composeTestRule
+            .onNodeWithTag("SearchBar")
+            .performTextInput("Titans 2")
+
+        composeTestRule
+            .onNodeWithTag("SearchSuggestions")
+            .assertIsDisplayed()
+            .onChildren()
+            .filter(hasClickAction())
+            .assertCountEquals(1)
+            .onFirst()
+            .assert(hasText(FakeSearchScreenDataSource.cardGames.last().title))
+    }
+
+    @Test
+    fun searchScreen_onManyGames_performFilterByCardGame_thenSearchForTitans4AndClickSearchImeAction_thenPerformFilterByStrategy_verifyNoGamesAreShownThenAfterClickingOnStrategyTheListWithOnlyThatGameIsShown() {
+        val games = FakeSearchScreenDataSource.manyGames
+        composeTestRule.setContent {
+            SearchScreen(
+                games = games,
+                barTitle = FakeSearchScreenDataSource.topBarTitle,
+                onBackPress = { },
+                onItemClick = { },
+                viewModel = viewModel
+            )
+        }
+
+        val filterIconContDesc =
+            composeTestRule.activity.getString(R.string.filter_games_content_description)
+        composeTestRule
+            .onNodeWithContentDescription(filterIconContDesc)
+            .performClick()
+
+        composeTestRule
+            .onNodeWithTag("GenresHorizontalList")
+            .onChildren()
+            .filter(hasClickAction())
+            .filterToOne(hasText("Card Game"))
+            .performClick()
+
+        composeTestRule
+            .onNodeWithTag("SearchBar")
+            .performTextInput("Titans 4")
+
+        composeTestRule
+            .onNodeWithTag("SearchBar")
+            .performImeAction()
+
+        composeTestRule
+            .onNodeWithText(composeTestRule.activity.getString(R.string.nothing_yet))
+            .assertIsDisplayed()
+
+        composeTestRule
+            .onNodeWithTag("GenresHorizontalList")
+            .onChildren()
+            .filter(hasClickAction())
+            .filterToOne(hasText("Strategy"))
+            .performClick()
+
+        composeTestRule
+            .onNodeWithTag("GamesVerticalList")
+            .assertIsDisplayed()
+            .onChildren()
+            .filter(hasClickAction())
+            .assertCountEquals(1)
+            .onFirst()
+            .assert(hasText(FakeSearchScreenDataSource.strategyGames.first().title))
+    }
+
+    @Test
+    fun searchScreen_onManyGames_performFilterByCardGame_thenSearchForTitans4_thenPerformFilterByStrategy_verifyNoSuggestionsShownThenAfterClickingOnStrategyTitans4IsTheOnlyGameSuggestion() {
+        val games = FakeSearchScreenDataSource.manyGames
+        composeTestRule.setContent {
+            SearchScreen(
+                games = games,
+                barTitle = FakeSearchScreenDataSource.topBarTitle,
+                onBackPress = { },
+                onItemClick = { },
+                viewModel = viewModel
+            )
+        }
+
+        val filterIconContDesc =
+            composeTestRule.activity.getString(R.string.filter_games_content_description)
+        composeTestRule
+            .onNodeWithContentDescription(filterIconContDesc)
+            .performClick()
+
+        composeTestRule
+            .onNodeWithTag("GenresHorizontalList")
+            .onChildren()
+            .filter(hasClickAction())
+            .filterToOne(hasText("Card Game"))
+            .performClick()
+
+        composeTestRule
+            .onNodeWithTag("SearchBar")
+            .performTextInput("Titans 4")
+
+        composeTestRule
+            .onNodeWithTag("SearchSuggestions")
+            .assertIsDisplayed()
+            .onChildren()
+            .filter(hasClickAction())
+            .assertCountEquals(0)
+
+        composeTestRule
+            .onNodeWithTag("GenresHorizontalList")
+            .onChildren()
+            .filter(hasClickAction())
+            .filterToOne(hasText("Strategy"))
+            .performClick()
+
+        composeTestRule
+            .onNodeWithTag("SearchSuggestions")
+            .assertIsDisplayed()
+            .onChildren()
+            .filter(hasClickAction())
+            .assertCountEquals(1)
+            .onFirst()
+            .assert(hasText(FakeSearchScreenDataSource.strategyGames.first().title))
+    }
+
+    @Test
+    fun searchScreen_onManyGames_performFilterByStrategyAndSports_thenClickOnThoseGenresAgain_verifyOnlyThoseGamesAreShownThenAllGamesAreShownAgain() {
+        val games = FakeSearchScreenDataSource.manyGames
+        composeTestRule.setContent {
+            SearchScreen(
+                games = games,
+                barTitle = FakeSearchScreenDataSource.topBarTitle,
+                onBackPress = { },
+                onItemClick = { },
+                viewModel = viewModel
+            )
+        }
+
+        val filterIconContDesc =
+            composeTestRule.activity.getString(R.string.filter_games_content_description)
+        composeTestRule
+            .onNodeWithContentDescription(filterIconContDesc)
+            .performClick()
+
+        val strategyChip = composeTestRule
+            .onNodeWithTag("GenresHorizontalList")
+            .onChildren()
+            .filter(hasClickAction())
+            .filterToOne(hasText("Strategy"))
+        strategyChip.performClick()
+
+        val sportsChip = composeTestRule
+            .onNodeWithTag("GenresHorizontalList")
+            .onChildren()
+            .filter(hasClickAction())
+            .filterToOne(hasText("Sports"))
+        sportsChip.performClick()
+
+        composeTestRule
+            .onNodeWithTag("GamesVerticalList")
+            .assertIsDisplayed()
+            .onChildren()
+            .filter(hasClickAction())
+            .assertCountEquals(FakeSearchScreenDataSource.strategyGames.size + FakeSearchScreenDataSource.sportsGames.size)
+
+        composeTestRule
+            .onNodeWithText("${FakeSearchScreenDataSource.strategyGames.size + FakeSearchScreenDataSource.sportsGames.size}")
+            .assertIsDisplayed()
+
+        strategyChip.performClick()
+        sportsChip.performClick()
+
+        composeTestRule
+            .onNodeWithText(games.size.toString())
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun searchScreen_onManyGames_performSimpleSearch_thenPerformEmptySearch_verifySuggestionsShownThenAllGamesShownAgain() {
+        val games = FakeSearchScreenDataSource.manyGames
+        composeTestRule.setContent {
+            SearchScreen(
+                games = games,
+                barTitle = FakeSearchScreenDataSource.topBarTitle,
+                onBackPress = { },
+                onItemClick = { },
+                viewModel = viewModel
+            )
+        }
+
+        composeTestRule
+            .onNodeWithTag("SearchBar")
+            .performTextInput("a")
+
+        composeTestRule
+            .onNodeWithTag("SearchSuggestions")
+            .assertIsDisplayed()
+
+        composeTestRule
+            .onNodeWithTag("SearchBar")
+            .performTextInput("")
+
+        composeTestRule
+            .onNodeWithTag("SearchSuggestions")
+            .assertDoesNotExist()
+
+        composeTestRule
+            .onNodeWithTag("GamesVerticalList")
+            .assertIsDisplayed()
+
+        composeTestRule
+            .onNodeWithText(games.size.toString())
+            .assertIsDisplayed()
     }
 }

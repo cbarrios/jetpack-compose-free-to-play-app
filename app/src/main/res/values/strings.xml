@@ -18,4 +18,6 @@
     <string name="min_sys_reqs">Minimum System Requirements</string>
     <string name="show_less">(Show less)</string>
     <string name="show_more">(Show More)</string>
+    <string name="search">Search</string>
+    <string name="clear_search_query">Clear search query</string>
 </resources>

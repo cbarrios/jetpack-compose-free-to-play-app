@@ -13,7 +13,10 @@ import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import com.lalosapps.freetoplay.domain.model.Game
+import com.lalosapps.freetoplay.R
 import kotlinx.coroutines.launch
 
 @Composable
@@ -30,7 +33,9 @@ fun SearchSuggestions(
     }
     Box {
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .testTag("SearchSuggestions"),
             horizontalAlignment = Alignment.CenterHorizontally,
             state = listState
         ) {
@@ -48,7 +53,10 @@ fun SearchSuggestions(
             IconButton(
                 onClick = { scope.launch { listState.scrollToItem(0) } }
             ) {
-                Icon(imageVector = Icons.Default.ArrowUpward, contentDescription = null)
+                Icon(
+                    imageVector = Icons.Default.ArrowUpward,
+                    contentDescription = stringResource(id = R.string.scroll_up_content_description)
+                )
             }
         }
     }

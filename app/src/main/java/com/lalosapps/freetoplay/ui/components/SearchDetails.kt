@@ -64,7 +64,10 @@ fun SearchDetails(
                 IconButton(
                     onClick = { scope.launch { listState.scrollToItem(0) } }
                 ) {
-                    Icon(imageVector = Icons.Default.ArrowUpward, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Default.ArrowUpward,
+                        contentDescription = stringResource(id = R.string.scroll_up_content_description)
+                    )
                 }
             }
         }
